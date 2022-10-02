@@ -22,6 +22,7 @@ export class YTMusicSession {
    */
   private constructor(private page: Page) {
     this.PlayUpdates = new YTPlayUpdates(page, [(song) => console.log(song)]);
+    this.PlaybackControls = new YTMusicPlaybackControls(page);
   }
 
   /**
@@ -82,23 +83,5 @@ export class YTMusicSession {
     ]);
 
     await this.PlayUpdates.forceSongUpdate();
-  }
-
-  public async nextSong() {
-    const nextSongSelector = `tp-yt-paper-icon-button[title="Next song"]`;
-    await this.page.waitForSelector(nextSongSelector);
-    await this.page.click(nextSongSelector);
-  }
-
-  public async previousSong() {
-    const previousSongSelector = `tp-yt-paper-icon-button[title="Previous song"]`;
-    await this.page.waitForSelector(previousSongSelector);
-    await this.page.click(previousSongSelector);
-  }
-
-  public async playPause() {
-    const playPauseSelector = `#play-pause-button`;
-    await this.page.waitForSelector(playPauseSelector);
-    await this.page.click(playPauseSelector);
   }
 }
