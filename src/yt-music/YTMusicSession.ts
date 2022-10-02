@@ -5,16 +5,25 @@ import {
 import { Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
+import {
+  mergeDefaultYTSessionOptions,
+  YTSessionOptions,
+} from './YTSessionOptions';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
 export class YTMusicSession {
   private constructor(private page: Page) {}
 
-  static async create(args?: string[]) {
+  static async create(
+    args?: string[],
+    sessionOptions?: Partial<YTSessionOptions>
+  ) {
+    sessionOptions = mergeDefaultYTSessionOptions(sessionOptions);
+
     puppeteer.use(Adblocker({ blockTrackers: true }));
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: sessionOptions.headless,
       ignoreDefaultArgs: ['--mute-audio'],
       args: ['--autoplay-policy=no-user-gesture-required'],
     });
