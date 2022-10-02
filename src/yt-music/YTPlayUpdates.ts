@@ -5,22 +5,37 @@ type PlayUpdateSubscriber = (nowPlaying: string) => void;
 export class YTPlayUpdates {
   private subscribers: PlayUpdateSubscriber[] = [];
 
-  private currentSong: string = '';
-  private currentArtist: string = '';
+  private currentSong: string;
+  private currentArtist: string;
 
+  /**
+   * A formatted display string that indicates the current song and artist that is playing.
+   */
   public get nowPlaying() {
     return `${this.currentSong} | ${this.currentArtist}`;
   }
 
+  /**
+   * Manages the currently playing song of a YTMusicSession instance. Updates to the current song can be subscribed to and can be force-updated if needed.
+   * @param page The Puppeteer page instance of the YTMusicSession.
+   * @param initialSubscribers A list of subscribers that will be subscribed before any play updates.
+   */
   constructor(private page: Page, initialSubscribers?: PlayUpdateSubscriber[]) {
     this.subscribers = initialSubscribers;
     this.handlePlayUpdate();
   }
 
+  /**
+   * Subscribes to automatic updates of either the current song or current artist.
+   * @param callback A callback that will be invoked when the current song or artist changes. The callback may receive one argument - a formatted string indicating the new song and artist.
+   */
   public subscribe = (callback: PlayUpdateSubscriber) => {
     this.subscribers.push(callback);
   };
 
+  /**
+   * Forces an update to the current song. This is useful when the page first loads as the subscribers will automatically receive updates when the DOM changes but not when it is first initialized.
+   */
   public async forceSongUpdate() {
     await Promise.all([
       this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),

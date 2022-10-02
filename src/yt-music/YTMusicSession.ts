@@ -16,10 +16,20 @@ const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 export class YTMusicSession {
   public PlayUpdates: YTPlayUpdates;
 
+  /**
+   * A YTMusicSession instance manages all headless browsing of the Youtube Music website. A YTMusicSession must be instantiated asynchronously via the 'create' function.
+   * @param page An initialized Puppeteer page used to navigate Youtube music.
+   */
   private constructor(private page: Page) {
     this.PlayUpdates = new YTPlayUpdates(page, [(song) => console.log(song)]);
   }
 
+  /**
+   * Asynchronously creates an instance of a YTMusicSession. A YTMusicSession instance manages all headless browsing of the Youtube Music website.
+   * @param args Any search query arguments entered by the user. These will automatically initiate a search.
+   * @param sessionOptions Any additional options for the session.
+   * @returns An instance of a YTMusicSession.
+   */
   static async create(
     args?: string[],
     sessionOptions?: Partial<YTSessionOptions>
@@ -44,6 +54,11 @@ export class YTMusicSession {
     return session;
   }
 
+  /**
+   * Initiates a search of Youtube Music based on the args passed in.
+   * @param args A list of strings that will be concatenated with a '+' in the search URL
+   * @param ytSearchOptions Additional options for the search.
+   */
   public async search(
     args: string[],
     ytSearchOptions?: Partial<YTSearchOptions>
