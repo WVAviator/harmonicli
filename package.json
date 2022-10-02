@@ -1,0 +1,28 @@
+{
+  "name": "music-browser-cli",
+  "version": "0.0.1",
+  "description": "A CLI for browsing and streaming music.",
+  "main": "bin/index.js",
+  "bin": {
+    "play": "bin/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod u+x ./bin/index.js",
+    "build:dev": "yarn build && yarn install:local",
+    "install:local": "sudo npm i -g ."
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/inquirer": "^9.0.2",
+    "@types/node": "^18.7.23",
+    "@types/puppeteer": "^5.4.6",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "commander": "^9.4.1",
+    "inquirer": "8.2.4",
+    "puppeteer": "^18.0.5"
+  }
+}
