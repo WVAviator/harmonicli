@@ -2,7 +2,9 @@ import {
   mergeDefaultYTSearchOptions,
   YTSearchOptions,
 } from './YTMusicSearchOptions';
-import puppeteer, { Page } from 'puppeteer';
+import { Page } from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import Adblocker from 'puppeteer-extra-plugin-adblocker';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
@@ -10,6 +12,7 @@ export class YTMusicSession {
   private constructor(private page: Page) {}
 
   static async create(args?: string[]) {
+    puppeteer.use(Adblocker({ blockTrackers: true }));
     const browser = await puppeteer.launch({
       headless: false,
       ignoreDefaultArgs: ['--mute-audio'],
@@ -48,20 +51,11 @@ export class YTMusicSession {
       this.page.click(searchResultsSelector),
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
-
-    await this.skipAds();
   }
 
   public async nextSong() {
     const nextSongSelector = `tp-yt-paper-icon-button[title="Next song"]`;
     await this.page.waitForSelector(nextSongSelector);
     await this.page.click(nextSongSelector);
-  }
-
-  public async skipAds() {
-    const skipAdsSelector = `#skip-button:5`;
-    await this.page.waitForSelector(skipAdsSelector);
-    await new Promise((r) => setTimeout(r, 5500));
-    await this.page.click(skipAdsSelector);
   }
 }
