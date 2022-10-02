@@ -16,8 +16,6 @@ program
 
 const options = program.opts();
 const headless = true && options.headless;
-console.log(options);
-console.log(headless);
 
 (async () => {
   const ytMusicSession = await YTMusicSession.create(program.args, {
