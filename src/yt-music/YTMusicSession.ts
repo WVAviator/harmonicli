@@ -9,22 +9,15 @@ import {
   mergeDefaultYTSessionOptions,
   YTSessionOptions,
 } from './YTSessionOptions';
+import { YTPlayUpdates } from './YTPlayUpdates';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
 export class YTMusicSession {
-  private playUpdateSubscribers = [];
-
-  private currentSong: string = '';
-  private currentArtist: string = '';
-
-  public get nowPlaying() {
-    return `${this.currentSong} | ${this.currentArtist}`;
-  }
+  public PlayUpdates: YTPlayUpdates;
 
   private constructor(private page: Page) {
-    this.subscribePlayUpdates((song) => console.log('Now playing: ', song));
-    this.handlePlayUpdate();
+    this.PlayUpdates = new YTPlayUpdates(page, [(song) => console.log(song)]);
   }
 
   static async create(
@@ -72,6 +65,8 @@ export class YTMusicSession {
       this.page.click(searchResultsSelector),
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
+
+    await this.PlayUpdates.forceSongUpdate();
   }
 
   public async nextSong() {
@@ -90,50 +85,5 @@ export class YTMusicSession {
     const playPauseSelector = `#play-pause-button`;
     await this.page.waitForSelector(playPauseSelector);
     await this.page.click(playPauseSelector);
-  }
-
-  public subscribePlayUpdates = (callback: (nowPlaying: string) => void) => {
-    this.playUpdateSubscribers.push(callback);
-  };
-
-  private async handlePlayUpdate() {
-    await this.page.exposeFunction(
-      'handlePlayUpdate',
-      (newSongInfo: string, newArtistInfo: string) => {
-        this.currentSong = newSongInfo;
-        this.currentArtist = newArtistInfo;
-        this.playUpdateSubscribers.forEach((subscriber) =>
-          subscriber(this.nowPlaying)
-        );
-      }
-    );
-    await Promise.all([
-      this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),
-      this.page.waitForSelector(
-        `ytmusic-player-bar span.subtitle yt-formatted-string a`
-      ),
-    ]);
-
-    await this.page.evaluate(() => {
-      const observer = new MutationObserver(() => {
-        const newSongElement: HTMLElement = document.querySelector(
-          `ytmusic-player-bar yt-formatted-string`
-        );
-        const newArtistElement: HTMLElement = document.querySelector(
-          `ytmusic-player-bar span.subtitle yt-formatted-string a`
-        );
-
-        //@ts-ignore
-        handlePlayUpdate(newSongElement.innerText, newArtistElement.innerText);
-      });
-      observer.observe(
-        document.querySelector(`ytmusic-player-bar yt-formatted-string`),
-        {
-          attributes: false,
-          childList: true,
-          subtree: true,
-        }
-      );
-    });
   }
 }
