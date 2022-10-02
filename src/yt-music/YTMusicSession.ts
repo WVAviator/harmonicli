@@ -2,16 +2,16 @@ import {
   mergeDefaultYTSearchOptions,
   YTSearchOptions,
 } from './YTMusicSearchOptions';
-import puppeteer from 'puppeteer';
+import puppeteer, { Page } from 'puppeteer';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
 export class YTMusicSession {
-  private constructor(private page) {}
+  private constructor(private page: Page) {}
 
   static async create(args?: string[]) {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       ignoreDefaultArgs: ['--mute-audio'],
       args: ['--autoplay-policy=no-user-gesture-required'],
     });
@@ -31,7 +31,7 @@ export class YTMusicSession {
     args: string[],
     ytSearchOptions?: Partial<YTSearchOptions>
   ) {
-    mergeDefaultYTSearchOptions(ytSearchOptions);
+    ytSearchOptions = mergeDefaultYTSearchOptions(ytSearchOptions);
 
     let url = `${YOUTUBE_MUSIC_URL}search?q=${args.join('+')}`;
     await this.page.goto(url);
@@ -42,7 +42,14 @@ export class YTMusicSession {
     //Wait for search results to load
     await this.page.waitForSelector(searchResultsSelector);
 
-    await this.page.click(searchResultsSelector);
+    if (!ytSearchOptions.activateFirstResult) return;
+
+    await Promise.all([
+      this.page.click(searchResultsSelector),
+      this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
+    ]);
+
+    await this.skipAds();
   }
 
   public async nextSong() {
@@ -54,6 +61,7 @@ export class YTMusicSession {
   public async skipAds() {
     const skipAdsSelector = `#skip-button:5`;
     await this.page.waitForSelector(skipAdsSelector);
+    await new Promise((r) => setTimeout(r, 5500));
     await this.page.click(skipAdsSelector);
   }
 }

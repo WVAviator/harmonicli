@@ -8,6 +8,6 @@ export const defaultYTSearchOptions: YTSearchOptions = {
 
 export const mergeDefaultYTSearchOptions = (
   ytSearchOptions?: Partial<YTSearchOptions>
-) => {
-  ytSearchOptions = Object.assign(defaultYTSearchOptions, ytSearchOptions);
+): YTSearchOptions => {
+  return Object.assign(defaultYTSearchOptions, ytSearchOptions);
 };
