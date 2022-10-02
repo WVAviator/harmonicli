@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { YTMusicSession } from './yt-music/YTMusicSession';
 
 const program = new Command();
 program
@@ -8,4 +9,6 @@ program
   .version('0.0.1')
   .parse(process.argv);
 
-console.log(program.args.join('+'));
+(async () => {
+  const ytMusicSession = await YTMusicSession.create(program.args);
+})();

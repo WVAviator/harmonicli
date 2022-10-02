@@ -23,6 +23,8 @@
   "dependencies": {
     "commander": "^9.4.1",
     "inquirer": "8.2.4",
-    "puppeteer": "^18.0.5"
+    "puppeteer": "^18.0.5",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-adblocker": "^2.13.5"
   }
 }
