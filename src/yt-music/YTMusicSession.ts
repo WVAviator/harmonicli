@@ -1,3 +1,4 @@
+import { BrowserSession } from './../user-controls/BrowserSession';
 import {
   mergeDefaultYTSearchOptions,
   YTSearchOptions,
@@ -10,11 +11,13 @@ import {
   YTSessionOptions,
 } from './YTSessionOptions';
 import { YTPlayUpdates } from './YTPlayUpdates';
+import { YTMusicPlaybackControls } from './YTMusicPlaybackControls';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
-export class YTMusicSession {
+export class YTMusicSession implements BrowserSession {
   public PlayUpdates: YTPlayUpdates;
+  public PlaybackControls: YTMusicPlaybackControls;
 
   /**
    * A YTMusicSession instance manages all headless browsing of the Youtube Music website. A YTMusicSession must be instantiated asynchronously via the 'create' function.
