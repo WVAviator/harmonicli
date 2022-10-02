@@ -1,8 +1,10 @@
 import { Page } from 'puppeteer';
+import {
+  PlayUpdates,
+  PlayUpdateSubscriber,
+} from '../user-controls/PlayUpdates';
 
-type PlayUpdateSubscriber = (nowPlaying: string) => void;
-
-export class YTPlayUpdates {
+export class YTPlayUpdates implements PlayUpdates {
   private subscribers: PlayUpdateSubscriber[] = [];
 
   private currentSong: string;
