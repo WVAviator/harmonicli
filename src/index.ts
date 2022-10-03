@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { UserControls } from './user-controls/UserControls';
 import { YTMusicSession } from './yt-music/YTMusicSession';
 
 const program = new Command();
@@ -21,4 +22,5 @@ const headless = true && options.headless;
   const ytMusicSession = await YTMusicSession.create(program.args, {
     headless,
   });
+  const userControls = new UserControls(ytMusicSession);
 })();
