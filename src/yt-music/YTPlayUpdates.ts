@@ -5,7 +5,7 @@ import {
 } from '../user-controls/PlayUpdates';
 
 export class YTPlayUpdates implements PlayUpdates {
-  private subscribers: PlayUpdateSubscriber[] = [];
+  private subscribers: PlayUpdateSubscriber[];
 
   private currentSong: string;
   private currentArtist: string;
@@ -23,7 +23,7 @@ export class YTPlayUpdates implements PlayUpdates {
    * @param initialSubscribers A list of subscribers that will be subscribed before any play updates.
    */
   constructor(private page: Page, initialSubscribers?: PlayUpdateSubscriber[]) {
-    this.subscribers = initialSubscribers;
+    this.subscribers = initialSubscribers || [];
     this.handlePlayUpdate();
   }
 

@@ -1,12 +1,22 @@
 import { BrowserSession } from './BrowserSession';
-import inquirer from 'inquirer';
+import inquirer, { PromptModule } from 'inquirer';
+import { Subject } from 'rxjs';
 export class UserControls {
+  private isSwitchingSongs = false;
+
   constructor(private session: BrowserSession) {
     this.basicPrompt();
+
+    this.session.PlayUpdates.subscribe((song) => {
+      if (!this.isSwitchingSongs) this.basicPrompt();
+    });
   }
 
   async basicPrompt() {
-    const basicControls = await inquirer.prompt([
+    process.stdout.moveCursor(0, -1);
+    process.stdout.clearLine(1);
+
+    const userResponse = await inquirer.prompt([
       {
         type: 'list',
         name: 'control',
@@ -14,12 +24,16 @@ export class UserControls {
         choices: this.getChoices(),
       },
     ]);
+    userResponse.control();
 
-    basicControls.control();
-    this.basicPrompt();
+    this.isSwitchingSongs = true;
+    setTimeout(() => {
+      this.isSwitchingSongs = false;
+      this.basicPrompt();
+    }, 500);
   }
 
   getChoices() {
-    return this.session.PlaybackControls.controlActions;
+    return [...this.session.PlaybackControls.controlActions];
   }
 }

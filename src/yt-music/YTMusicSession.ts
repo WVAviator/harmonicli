@@ -24,7 +24,7 @@ export class YTMusicSession implements BrowserSession {
    * @param page An initialized Puppeteer page used to navigate Youtube music.
    */
   private constructor(private page: Page) {
-    this.PlayUpdates = new YTPlayUpdates(page, [(song) => console.log(song)]);
+    this.PlayUpdates = new YTPlayUpdates(page);
     this.PlaybackControls = new YTMusicPlaybackControls(page);
   }
 
