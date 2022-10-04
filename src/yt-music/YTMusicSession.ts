@@ -7,9 +7,9 @@ import { Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
 import {
-  mergeDefaultYTSessionOptions,
-  YTSessionOptions,
-} from './YTSessionOptions';
+  mergeDefaultSessionOptions,
+  SessionOptions,
+} from '../user-controls/SessionOptions';
 import { YTPlayUpdates } from './YTPlayUpdates';
 import { YTMusicPlaybackControls } from './YTMusicPlaybackControls';
 
@@ -36,9 +36,9 @@ export class YTMusicSession implements BrowserSession {
    */
   static async create(
     args?: string[],
-    sessionOptions?: Partial<YTSessionOptions>
+    sessionOptions?: Partial<SessionOptions>
   ) {
-    sessionOptions = mergeDefaultYTSessionOptions(sessionOptions);
+    sessionOptions = mergeDefaultSessionOptions(sessionOptions);
 
     puppeteer.use(Adblocker({ blockTrackers: true }));
     const browser = await puppeteer.launch({
