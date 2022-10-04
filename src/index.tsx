@@ -1,9 +1,12 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import { UserControls } from './user-controls/UserControls';
+import React from 'react';
+import { render } from 'ink';
+import { Command, OptionValues } from 'commander';
+import { App } from './App';
 import { YTMusicSession } from './yt-music/YTMusicSession';
 
-const program = new Command();
+const program = new Command ();
+
 program
   .name('music-browser-cli')
   .description('Utility for headlessly browsing and listening to music.')
@@ -15,12 +18,8 @@ program
   )
   .parse(process.argv);
 
-const options = program.opts();
-const headless = true && options.headless;
+const options: OptionValues = program.opts();
 
-(async () => {
-  const ytMusicSession = await YTMusicSession.create(program.args, {
-    headless,
-  });
-  const userControls = new UserControls(ytMusicSession);
-})();
+YTMusicSession.create(program.args, options).then(session => render(<App session={session}/>));
+
+// render(<App session={}/>);

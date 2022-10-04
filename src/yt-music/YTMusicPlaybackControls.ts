@@ -20,9 +20,9 @@ export class YTMusicPlaybackControls implements PlaybackControls {
 
   public get controlActions() {
     return [
-      { name: 'Play/Pause', value: () => this.execute(YTControl.PlayPause) },
-      { name: 'Next Song', value: () => this.execute(YTControl.Next) },
-      { name: 'Previous Song', value: () => this.execute(YTControl.Previous) },
+      { label: 'Play/Pause', value: () => this.execute(YTControl.PlayPause) },
+      { label: 'Next Song', value: () => this.execute(YTControl.Next) },
+      { label: 'Previous Song', value: () => this.execute(YTControl.Previous) },
     ];
   }
 }
