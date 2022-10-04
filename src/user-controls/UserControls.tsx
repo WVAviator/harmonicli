@@ -1,17 +1,12 @@
 import { BrowserSession } from './BrowserSession';
-import inquirer, { PromptModule } from 'inquirer';
-
 import React from 'react';
 import { Text } from 'ink';
 import SelectInput from 'ink-select-input';
 
 export class UserControls extends React.Component {
-  private isSwitchingSongs = false;
-  
   session: BrowserSession;
 
   constructor(props) {
-
     super (props);
 
     this.session = props.session;
@@ -19,7 +14,7 @@ export class UserControls extends React.Component {
     this.state = {
       nowPlaying: this.session.PlayUpdates.nowPlaying,
     }
-
+    
     this.session.PlayUpdates.subscribe((song) => {
       this.updateSongTitle(song);
     });
