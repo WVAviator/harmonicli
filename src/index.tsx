@@ -3,9 +3,8 @@ import React from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
 import { App } from './App';
-import { YTMusicSession } from './yt-music/YTMusicSession';
 
-const program = new Command ();
+const program = new Command();
 
 program
   .name('music-browser-cli')
