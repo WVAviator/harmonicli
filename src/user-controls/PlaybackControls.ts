@@ -1,6 +1,6 @@
-import { PromptChoice } from './PromptChoice';
+import { Actions } from './PromptChoice';
 
 export interface PlaybackControls {
   execute: (control: any) => Promise<void>;
-  controlActions: PromptChoice[];
+  controlActions: Actions[];
 }

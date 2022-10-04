@@ -1,4 +1,4 @@
-export interface PromptChoice {
-  name: string;
+export interface Actions {
+  label: string;
   value: () => void;
 }
