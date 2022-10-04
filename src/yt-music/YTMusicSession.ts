@@ -70,7 +70,9 @@ export class YTMusicSession implements BrowserSession {
     ytSearchOptions = mergeDefaultYTSearchOptions(ytSearchOptions);
 
     let url = `${YOUTUBE_MUSIC_URL}search?q=${args.join('+')}`;
-    await this.page.goto(url);
+    await this.page.goto(url, {
+      waitUntil: 'networkidle2',
+    });
 
     const searchResultsSelector =
       'ytmusic-shelf-renderer:first-of-type div#contents';
@@ -86,5 +88,9 @@ export class YTMusicSession implements BrowserSession {
     ]);
 
     await this.PlayUpdates.forceSongUpdate();
+  }
+
+  public async close() {
+    await this.page.browser().close();
   }
 }
