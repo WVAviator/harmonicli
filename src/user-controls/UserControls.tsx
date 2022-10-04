@@ -5,7 +5,7 @@ import { BrowserSessionContext } from '../BrowserSessionProvider';
 
 const UserControls = () => {
   const session = useContext(BrowserSessionContext);
-  const [nowPlaying, setNowPlaying] = useState('');
+  const [nowPlaying, setNowPlaying] = useState(session.PlayUpdates.nowPlaying);
 
   useEffect(() => {
     session.PlayUpdates.subscribe((nowPlaying) => {
