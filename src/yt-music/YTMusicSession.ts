@@ -73,7 +73,7 @@ export class YTMusicSession implements BrowserSession {
     await this.page.goto(url);
 
     const searchResultsSelector =
-      'ytmusic-shelf-renderer:first-of-type div#contents';
+      'ytmusic-shelf-renderer:first-of-type div#contents ytmusic-responsive-list-item-renderer #play-button';
 
     //Wait for search results to load
     await this.page.waitForSelector(searchResultsSelector);
