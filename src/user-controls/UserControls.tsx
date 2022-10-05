@@ -1,47 +1,27 @@
-import { BrowserSession } from './BrowserSession';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text } from 'ink';
 import SelectInput from 'ink-select-input';
+import { BrowserSessionContext } from '../BrowserSessionProvider';
 
-export class UserControls extends React.Component {
-  session: BrowserSession;
+const UserControls = () => {
+  const session = useContext(BrowserSessionContext);
+  const [nowPlaying, setNowPlaying] = useState(session.PlayUpdates.nowPlaying);
 
-  constructor(props) {
-    super (props);
-
-    this.session = props.session;
-
-    this.state = {
-      nowPlaying: this.session.PlayUpdates.nowPlaying,
-    }
-    
-    this.session.PlayUpdates.subscribe((song) => {
-      this.updateSongTitle(song);
+  useEffect(() => {
+    session.PlayUpdates.subscribe((nowPlaying) => {
+      setNowPlaying(nowPlaying);
     });
+  }, []);
 
-  }
+  return (
+    <>
+      <Text>{nowPlaying}</Text>
+      <SelectInput
+        items={session.PlaybackControls.controlActions}
+        onSelect={(item) => item.value()}
+      ></SelectInput>
+    </>
+  );
+};
 
-  async updateSongTitle(song: string) {
-    this.setState({
-      nowPlaying: song,
-    })
-  }
-
-  getChoices() {
-    return [...this.session.PlaybackControls.controlActions];
-  }
-
-  handleAction (action) {
-    action.value();
-  }
-
-  render () {
-    return (
-      <>
-        {/* <Text>{this.state.nowPlaying}</Text> */}
-        <Text>Test</Text>
-        <SelectInput items={this.getChoices()} onSelect={this.handleAction}></SelectInput>
-      </>
-    )
-  }
-}
+export default UserControls;

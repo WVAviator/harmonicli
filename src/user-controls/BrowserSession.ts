@@ -5,4 +5,5 @@ export interface BrowserSession {
   search: (args: string[]) => Promise<void>;
   PlaybackControls: PlaybackControls;
   PlayUpdates: PlayUpdates;
+  close: () => Promise<void>;
 }

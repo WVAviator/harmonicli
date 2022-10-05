@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import React from 'react';
 import { render } from 'ink';
-import { Command, OptionValues } from 'commander';
+import { Command } from 'commander';
 import { App } from './App';
-import { YTMusicSession } from './yt-music/YTMusicSession';
 
-const program = new Command ();
+const program = new Command();
 
 program
   .name('music-browser-cli')
@@ -18,8 +17,9 @@ program
   )
   .parse(process.argv);
 
-const options: OptionValues = program.opts();
+const options = program.opts();
+const headless = true && options.headless;
 
-YTMusicSession.create(program.args, options).then(session => render(<App session={session}/>));
+render(<App args={program.args} options={{ headless }} />);
 
 // render(<App session={}/>);
