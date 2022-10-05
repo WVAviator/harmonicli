@@ -12,11 +12,13 @@ import {
 } from '../user-controls/SessionOptions';
 import { YTPlayUpdates } from './YTPlayUpdates';
 import { YTMusicPlaybackControls } from './YTMusicPlaybackControls';
+import { YTProgressUpdates } from './YTProgressUpdates';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
 export class YTMusicSession implements BrowserSession {
   public PlayUpdates: YTPlayUpdates;
+  public ProgressUpdates: YTProgressUpdates
   public PlaybackControls: YTMusicPlaybackControls;
 
   /**
@@ -25,6 +27,7 @@ export class YTMusicSession implements BrowserSession {
    */
   private constructor(private page: Page) {
     this.PlayUpdates = new YTPlayUpdates(page);
+    this.ProgressUpdates = new YTProgressUpdates(page);
     this.PlaybackControls = new YTMusicPlaybackControls(page);
   }
 

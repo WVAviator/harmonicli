@@ -25,6 +25,7 @@
     "@types/react": "^18.0.21",
     "commander": "^9.4.1",
     "ink": "^3.2.0",
+    "ink-progress-bar": "^3.0.0",
     "ink-select-input": "^4.2.1",
     "puppeteer": "^18.0.5",
     "puppeteer-extra": "^3.3.4",
