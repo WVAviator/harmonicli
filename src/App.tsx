@@ -35,8 +35,8 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
     <BrowserSessionProvider value={session}>
       {session ? 
         <>
-          <UserControls />
           <SongProgress />
+          <UserControls />
         </> 
       : <Text>Loading...</Text>}
     </BrowserSessionProvider>
