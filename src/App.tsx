@@ -4,6 +4,7 @@ import { YTMusicSession } from './yt-music/YTMusicSession';
 import BrowserSessionProvider from './BrowserSessionProvider';
 import { SessionOptions } from './user-controls/SessionOptions';
 import { Text } from 'ink';
+import SongProgress from './progress-bar/SongProgress';
 
 interface AppProps {
   args?: string[];
@@ -32,7 +33,12 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
 
   return (
     <BrowserSessionProvider value={session}>
-      {session ? <UserControls /> : <Text>Loading...</Text>}
+      {session ? 
+        <>
+          <UserControls />
+          <SongProgress />
+        </> 
+      : <Text>Loading...</Text>}
     </BrowserSessionProvider>
   );
 };
