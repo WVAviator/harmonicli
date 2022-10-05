@@ -17,7 +17,7 @@ const SongProgress = () => {
   }, []);
 
   return (
-    <Box marginBottom={0.5} borderStyle="round">
+    <Box marginTop={0.5} borderStyle="round">
       <ProgressBar
         color="blue"
         percent={currentProgress.currentTime / currentProgress.currentDuration}
