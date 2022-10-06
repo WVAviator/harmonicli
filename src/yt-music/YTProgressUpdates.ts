@@ -1,10 +1,15 @@
+import crypto from 'crypto';
 import { Page } from 'puppeteer';
-import { Progress, ProgressUpdate, ProgressUpdateSubscriber } from '../progress-bar/ProgressUpdate';
+import {
+  Progress,
+  ProgressUpdate,
+  ProgressUpdateSubscriber,
+} from '../progress-bar/ProgressUpdate';
 
 // This is pretty much the same as YTPlayUpdates
 
 export class YTProgressUpdates implements ProgressUpdate {
-  private subscribers: ProgressUpdateSubscriber[];
+  private subscribers: Record<string, ProgressUpdateSubscriber> = {};
 
   private progress: Progress;
 
@@ -12,33 +17,43 @@ export class YTProgressUpdates implements ProgressUpdate {
     return this.progress;
   }
 
-  constructor(private page: Page, initialSubscribers?: ProgressUpdateSubscriber[]) {
-    this.subscribers = initialSubscribers || [];
+  constructor(
+    private page: Page,
+    initialSubscribers?: ProgressUpdateSubscriber[]
+  ) {
+    if (initialSubscribers)
+      initialSubscribers.forEach((sub) => this.subscribe(sub));
     this.handleProgressUpdate();
   }
-  
 
   public subscribe = (callback: ProgressUpdateSubscriber) => {
-    this.subscribers.push(callback);
+    const subscriberId = crypto.randomBytes(8).toString('hex');
+    this.subscribers[subscriberId] = callback;
+    return subscriberId;
+  };
+
+  public unsubscribe = (subscriberId: string) => {
+    delete this.subscribers[subscriberId];
   };
 
   public async forceProgressUpdate() {
-    
     await this.page.waitForSelector(`video`);
 
     const progress = await this.page.$eval(
-        `video`,
-        (element: HTMLVideoElement) => {
-          return { 
-            currentTime: element.currentTime, 
-            currentDuration: element.duration, 
-          }
-        }
-      );
+      `video`,
+      (element: HTMLVideoElement) => {
+        return {
+          currentTime: element.currentTime,
+          currentDuration: element.duration,
+        };
+      }
+    );
 
     this.progress = progress;
 
-    this.subscribers.forEach((subscriber) => subscriber(this.progress));
+    Object.values(this.subscribers).forEach((subscriber) =>
+      subscriber(this.progress)
+    );
   }
 
   private async handleProgressUpdate() {
@@ -46,7 +61,9 @@ export class YTProgressUpdates implements ProgressUpdate {
       'handleProgressUpdate',
       (currentProgress: Progress) => {
         this.progress = currentProgress;
-        this.subscribers.forEach((subscriber) => subscriber(this.progress));
+        Object.values(this.subscribers).forEach((subscriber) =>
+          subscriber(this.progress)
+        );
       }
     );
 
@@ -54,7 +71,8 @@ export class YTProgressUpdates implements ProgressUpdate {
 
     await this.page.evaluate(() => {
       const observer = new MutationObserver(() => {
-        const currentVideoElement: HTMLVideoElement = document.querySelector(`video`);
+        const currentVideoElement: HTMLVideoElement =
+          document.querySelector(`video`);
 
         const currentProgress: Progress = {
           currentTime: currentVideoElement.currentTime,
