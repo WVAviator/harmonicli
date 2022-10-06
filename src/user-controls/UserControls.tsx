@@ -6,11 +6,16 @@ import { BrowserSessionContext } from '../BrowserSessionProvider';
 const UserControls = () => {
   const session = useContext(BrowserSessionContext);
   const [nowPlaying, setNowPlaying] = useState(session.PlayUpdates.nowPlaying);
+  const [nowPlayingSubscriberId, setNowPlayingSubscriberId] = useState(null);
 
   useEffect(() => {
-    session.PlayUpdates.subscribe((nowPlaying) => {
+    const subscriberId = session.PlayUpdates.subscribe((nowPlaying) => {
       setNowPlaying(nowPlaying);
     });
+    setNowPlayingSubscriberId(subscriberId);
+    return () => {
+      session.PlayUpdates.unsubscribe(nowPlayingSubscriberId);
+    };
   }, []);
 
   return (

@@ -5,15 +5,25 @@ import ProgressBar from 'ink-progress-bar';
 import { Box } from 'ink';
 
 const SongProgress = () => {
-
   const session = useContext(BrowserSessionContext);
-  const [currentProgress, setCurrentProgress] = useState(session.ProgressUpdates.currentProgress);
+  const [currentProgress, setCurrentProgress] = useState(
+    session.ProgressUpdates.currentProgress
+  );
+  const [progressSubscriber, setProgressSubscriber] = useState(null);
 
   useEffect(() => {
-    session.ProgressUpdates.subscribe((currentProgress) => {
-      setCurrentProgress(currentProgress);
-    });
+    const subscriberId = session.ProgressUpdates.subscribe(
+      (currentProgress) => {
+        setCurrentProgress(currentProgress);
+      }
+    );
 
+    setProgressSubscriber(subscriberId);
+
+    return () => {
+      session.ProgressUpdates.unsubscribe(progressSubscriber);
+      setProgressSubscriber(null);
+    };
   }, []);
 
   return (
@@ -23,7 +33,7 @@ const SongProgress = () => {
         percent={currentProgress.currentTime / currentProgress.currentDuration}
       />
     </Box>
-  )
-}
+  );
+};
 
 export default SongProgress;

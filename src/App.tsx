@@ -23,9 +23,10 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
 
     establishSession();
     return () => {
+      const detachedSession = session;
+      setSession(null);
       const terminateSession = async () => {
-        await session?.close();
-        setSession(null);
+        await detachedSession?.close();
       };
       terminateSession();
     };
@@ -33,12 +34,14 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
 
   return (
     <BrowserSessionProvider value={session}>
-      {session ? 
+      {session ? (
         <>
           <SongProgress />
           <UserControls />
-        </> 
-      : <Text>Loading...</Text>}
+        </>
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </BrowserSessionProvider>
   );
 };
