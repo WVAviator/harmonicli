@@ -1,6 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { BrowserSessionContext } from '../BrowserSessionProvider';
 
+/**
+ * Get the progress and duration of the song playing in the current browser session context.
+ * @returns {Progress} An object with currentTime and currentDuration properties.
+ */
 const useSongProgress = () => {
   const session = useContext(BrowserSessionContext);
   const [currentProgress, setCurrentProgress] = useState(
