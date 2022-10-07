@@ -25,7 +25,6 @@ const SongProgress = () => {
 
   return (
     <Box
-      marginBottom={0.5}
       borderStyle="round"
       width={columns * 0.5 + 14}
       height={3}
