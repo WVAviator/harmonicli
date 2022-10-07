@@ -18,7 +18,7 @@ const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
 export class YTMusicSession implements BrowserSession {
   public PlayUpdates: YTPlayUpdates;
-  public ProgressUpdates: YTProgressUpdates
+  public ProgressUpdates: YTProgressUpdates;
   public PlaybackControls: YTMusicPlaybackControls;
 
   /**
@@ -93,6 +93,9 @@ export class YTMusicSession implements BrowserSession {
     await this.PlayUpdates.forceSongUpdate();
   }
 
+  /**
+   * Closes the browser and ends the session.
+   */
   public async close() {
     await this.page.browser().close();
   }

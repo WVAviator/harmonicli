@@ -11,13 +11,23 @@ export enum YTControl {
 }
 
 export class YTMusicPlaybackControls implements PlaybackControls {
+  /**
+   * A helper class for managing the playback controls of a YTMusicSession.
+   */
   constructor(private page: Page) {}
 
+  /**
+   * Executes a play/pause/next/previous instruction.
+   * @param {YTControl} control The action to execute.
+   */
   public async execute(control: YTControl) {
     await this.page.waitForSelector(control);
     await this.page.click(control);
   }
 
+  /**
+   * The available playback controls for a YTMusicSession.
+   */
   public get controlActions() {
     return [
       { label: '⏮', value: () => this.execute(YTControl.Previous) },
