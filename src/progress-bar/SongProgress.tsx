@@ -1,37 +1,14 @@
 import React from 'react';
-import { BrowserSessionContext } from '../BrowserSessionProvider';
-import { useState, useContext, useEffect } from 'react';
 import ProgressBar from 'ink-progress-bar';
 import { Box } from 'ink';
+import useSongProgress from '../hooks/useSongProgress';
 
 const SongProgress = () => {
-  const session = useContext(BrowserSessionContext);
-  const [currentProgress, setCurrentProgress] = useState(
-    session.ProgressUpdates.currentProgress
-  );
-  const [progressSubscriber, setProgressSubscriber] = useState(null);
-
-  useEffect(() => {
-    const subscriberId = session.ProgressUpdates.subscribe(
-      (currentProgress) => {
-        setCurrentProgress(currentProgress);
-      }
-    );
-
-    setProgressSubscriber(subscriberId);
-
-    return () => {
-      session.ProgressUpdates.unsubscribe(progressSubscriber);
-      setProgressSubscriber(null);
-    };
-  }, []);
+  const { currentTime, currentDuration } = useSongProgress();
 
   return (
     <Box marginBottom={0.5} borderStyle="round">
-      <ProgressBar
-        color="blue"
-        percent={currentProgress.currentTime / currentProgress.currentDuration}
-      />
+      <ProgressBar color="blue" percent={currentTime / currentDuration} />
     </Box>
   );
 };

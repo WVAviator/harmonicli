@@ -1,22 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Text } from 'ink';
 import SelectInput from 'ink-select-input';
 import { BrowserSessionContext } from '../BrowserSessionProvider';
+import useNowPlaying from '../hooks/useNowPlaying';
 
 const UserControls = () => {
   const session = useContext(BrowserSessionContext);
-  const [nowPlaying, setNowPlaying] = useState(session.PlayUpdates.nowPlaying);
-  const [nowPlayingSubscriberId, setNowPlayingSubscriberId] = useState(null);
-
-  useEffect(() => {
-    const subscriberId = session.PlayUpdates.subscribe((nowPlaying) => {
-      setNowPlaying(nowPlaying);
-    });
-    setNowPlayingSubscriberId(subscriberId);
-    return () => {
-      session.PlayUpdates.unsubscribe(nowPlayingSubscriberId);
-    };
-  }, []);
+  const nowPlaying = useNowPlaying();
 
   return (
     <>
