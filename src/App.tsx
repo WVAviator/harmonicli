@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import UserControls from './user-controls/UserControls';
 import { YTMusicSession } from './yt-music/YTMusicSession';
 import BrowserSessionProvider from './BrowserSessionProvider';
 import { SessionOptions } from './user-controls/SessionOptions';
 import { Text } from 'ink';
+import Gradient from 'ink-gradient';
+import Spinner from 'ink-spinner';
 import SongProgress from './progress-bar/SongProgress';
 import NowPlaying from './components/NowPlaying/NowPlaying';
+import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 
 interface AppProps {
   args?: string[];
@@ -39,10 +41,17 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
         <>
           <NowPlaying />
           <SongProgress />
-          <UserControls />
+          <PlaybackControls />
         </>
       ) : (
-        <Text>Loading...</Text>
+        <Text>
+          <Gradient name="summer">
+            <Text>
+              <Spinner type="bouncingBall" />
+            </Text>
+          </Gradient>
+          {' Loading'}
+        </Text>
       )}
     </BrowserSessionProvider>
   );
