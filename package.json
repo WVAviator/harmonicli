@@ -7,10 +7,11 @@
     "play": "bin/index.js"
   },
   "scripts": {
-    "build": "tsc && chmod u+x ./bin/index.js",
+    "link": "sudo npm link",
+    "dev": "ts-node src/index.tsx",
     "start": "yarn build && ./bin/index.js old town road --no-headless",
-    "build:dev": "yarn build && yarn install:local",
-    "install:local": "sudo npm i -g ."
+    "build": "tsc && chmod u+x ./bin/index.js",
+    "install": "yarn build && sudo npm i -g ."
   },
   "license": "MIT",
   "devDependencies": {
@@ -26,7 +27,6 @@
     "commander": "^9.4.1",
     "ink": "^3.2.0",
     "ink-gradient": "^2.0.0",
-    "ink-progress-bar": "^3.0.0",
     "ink-select-input": "^4.2.1",
     "ink-use-stdout-dimensions": "^1.0.5",
     "puppeteer": "^18.0.5",
