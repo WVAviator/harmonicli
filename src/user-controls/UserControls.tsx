@@ -10,7 +10,6 @@ const UserControls = () => {
 
   return (
     <>
-      <Text>{nowPlaying}</Text>
       <SelectInput
         items={session.PlaybackControls.controlActions}
         onSelect={(item) => item.value()}

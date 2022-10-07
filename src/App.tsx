@@ -5,6 +5,7 @@ import BrowserSessionProvider from './BrowserSessionProvider';
 import { SessionOptions } from './user-controls/SessionOptions';
 import { Text } from 'ink';
 import SongProgress from './progress-bar/SongProgress';
+import NowPlaying from './components/NowPlaying/NowPlaying';
 
 interface AppProps {
   args?: string[];
@@ -36,6 +37,7 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
     <BrowserSessionProvider value={session}>
       {session ? (
         <>
+          <NowPlaying />
           <SongProgress />
           <UserControls />
         </>
