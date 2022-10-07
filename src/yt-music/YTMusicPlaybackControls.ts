@@ -19,11 +19,7 @@ export class YTMusicPlaybackControls implements PlaybackControls {
    */
   constructor(private page: Page) {}
 
-  /**
-   * Executes a play/pause/next/previous instruction.
-   * @param {YTControl} control The action to execute.
-   */
-  public async execute(control: YTControl) {
+  private async execute(control: YTControl) {
     await this.page.waitForSelector(control);
     await this.page.click(control);
   }

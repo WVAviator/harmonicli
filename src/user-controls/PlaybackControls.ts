@@ -12,6 +12,8 @@ export interface PlaybackActions {
  * An abstract interface to be implemented by a class that provides the means to manipulate playback controls in the session.
  */
 export interface PlaybackControls {
-  execute: (control: any) => Promise<void>;
+  /**
+   * This should provide a list of playback actions that can be displayed and activated as needed.
+   */
   controlActions: PlaybackActions[];
 }
