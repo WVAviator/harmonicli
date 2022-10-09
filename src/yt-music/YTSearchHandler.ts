@@ -11,13 +11,9 @@ export class YTSearchHandler implements SearchHandler {
 
   constructor (page: Page) {
     this.page = page;
-
     this.songList;
-
     this.subscribers = {};
-
     this.firstSearch = true;
-
   }
   
   subscribe (callback: SearchListSubscriber) {
@@ -31,12 +27,48 @@ export class YTSearchHandler implements SearchHandler {
   }
 
   async search (query: string | string[]) {
-    
-    // Minimize player
-    await Promise.all([
-      this.page.waitForSelector('.player-minimize-button'),
-      this.page.click('.player-minimize-button'),
-    ]);
+
+    // TODO: Search for new query
+    if (query) {
+      if (Array.isArray(query)) query = query.join(' ');
+
+      // @ts-ignore becuase value does exist on Element
+      const currentQuery = await this.page.evaluate(() => document.querySelector('div.search-box input').value);
+
+      // Click search bar (bring it to focus for next steps)
+      await Promise.all([
+        this.page.waitForSelector('div.search-box input'),
+        this.page.click('div.search-box input'),
+      ]);
+      
+      // Clear search bar
+      await this.page.keyboard.down('Shift');
+      for (let i = 0; i < currentQuery.length; i++) {
+        await this.page.keyboard.press("ArrowLeft");
+      }
+      await this.page.keyboard.up('Shift');
+      await this.page.keyboard.press('Backspace');
+
+      // Enter new query
+      await this.page.keyboard.type(query);
+      await this.page.keyboard.press('Enter');
+    }
+
+    // Update songList and send to subscribers
+    await this.page.waitForNetworkIdle();
+    this.updateSongList(query.length <= 0);
+
+  }
+  
+  async updateSongList (shouldMinimize: boolean) {
+
+    if (shouldMinimize) {
+      // Minimize player
+      await Promise.all([
+        this.page.waitForSelector('.player-minimize-button'),
+        this.page.click('.player-minimize-button'),
+      ]);
+    }
     
     // Expand search results      
     await Promise.all([
@@ -49,15 +81,6 @@ export class YTSearchHandler implements SearchHandler {
 
     // Update the songlist on idle.
     await this.page.waitForNetworkIdle();
-    this.updateSongList();
-
-  }
-
-  async execute (item: string) {
-
-  }
-  
-  async updateSongList () {
 
     // Format the song info so we can pass to the song selector.
     const songs: Song[] = await this.page.evaluate(() => {
@@ -87,8 +110,6 @@ export class YTSearchHandler implements SearchHandler {
 
       return getSongInfo(document.querySelectorAll('ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer'));
     });
-
-    console.log(songs);
 
     // Update the songlist for each hook.
     Object.values(this.subscribers).forEach((cb: SearchListSubscriber) => cb(songs));
