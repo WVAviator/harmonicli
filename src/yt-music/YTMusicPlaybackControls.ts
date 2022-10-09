@@ -25,7 +25,7 @@ export class YTMusicPlaybackControls implements PlaybackControls {
       { label: '⏮', value: () => this.execute(YTControl.Previous) },
       { label: '⏯', value: () => this.execute(YTControl.PlayPause) },
       { label: '⏭', value: () => this.execute(YTControl.Next) },
-      { label: '🔎', value: () => this.SearchHandler.search('a') },
+      { label: '🔎', value: () => this.SearchHandler.search('we will rock you') },
     ];
   }
 }
