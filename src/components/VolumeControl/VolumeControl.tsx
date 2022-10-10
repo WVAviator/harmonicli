@@ -1,9 +1,9 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
 
-const MAX_VOLUME = 12;
-const VOLUME_STRING = '▁▁▂▂▃▃▄▄▅▅▆▆';
+const MAX_VOLUME = 10;
+const VOLUME_STRING = '▁▂▂▃▃▄▄▅▅▆';
 
 const VolumeControl: React.FC = () => {
   const session = useContext(BrowserSessionContext);
@@ -13,12 +13,17 @@ const VolumeControl: React.FC = () => {
   const { isFocused } = useFocus({ id: 'volume-control' });
   const { focusNext, focusPrevious } = useFocusManager();
 
+  useEffect(() => {
+    setVolume(session.VolumeControl.currentVolume * MAX_VOLUME);
+  }, []);
+
   useInput((_, key) => {
     if (!isFocused) return;
 
     if (key.return) {
       if (isSelected) {
         setIsSelected(false);
+        session.VolumeControl.setVolume(volume / MAX_VOLUME);
       } else {
         setIsSelected(true);
       }
@@ -40,11 +45,13 @@ const VolumeControl: React.FC = () => {
 
     if (key.upArrow) {
       setIsSelected(false);
+      session.VolumeControl.setVolume(volume / MAX_VOLUME);
       focusPrevious();
     }
 
     if (key.downArrow) {
       setIsSelected(false);
+      session.VolumeControl.setVolume(volume / MAX_VOLUME);
       focusNext();
     }
   });
