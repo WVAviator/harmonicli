@@ -9,7 +9,7 @@ const PlaybackControls: React.FC = () => {
   const [selectedControlIndex, setSelectedControlIndex] = useState(1);
 
   const { isFocused } = useFocus({ autoFocus: true, id: 'playback-controls' });
-  const { focusNext } = useFocusManager();
+  const { focus } = useFocusManager();
 
   useInput((_, key) => {
     if (!isFocused) return;
@@ -24,7 +24,7 @@ const PlaybackControls: React.FC = () => {
     }
     if (key.downArrow) {
       setSelectedControlIndex(1);
-      focusNext();
+      focus('search-bar');
     }
     if (key.return) {
       controls[selectedControlIndex].value();
