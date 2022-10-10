@@ -7,13 +7,11 @@ export class YTSearchHandler implements SearchHandler {
   private page: Page;
   public songList: Song[];
   private subscribers: {};
-  private firstSearch: boolean;
 
   constructor (page: Page) {
     this.page = page;
     this.songList;
     this.subscribers = {};
-    this.firstSearch = true;
   }
   
   subscribe (callback: SearchListSubscriber) {
@@ -26,14 +24,26 @@ export class YTSearchHandler implements SearchHandler {
     delete this.subscribers[subscriberID];
   }
 
+  async play (playID: string) {
+    // Have to do it this way becuase some play buttons may be off the screen or under elements that will break things if clicked.
+    await this.page.evaluate(
+      (playID) => {
+        // @ts-ignore because it will have click method.
+        document.querySelector(`.${playID}`).click();
+      },
+      playID
+    );
+  }
+
   async search (query: string | string[]) {
 
-    // TODO: Search for new query
+
     if (query) {
       if (Array.isArray(query)) query = query.join(' ');
 
       // @ts-ignore becuase value does exist on Element
       const currentQuery = await this.page.evaluate(() => document.querySelector('div.search-box input').value);
+      if (currentQuery == query) return;
 
       // Click search bar (bring it to focus for next steps)
       await Promise.all([
@@ -60,7 +70,7 @@ export class YTSearchHandler implements SearchHandler {
 
   }
   
-  async updateSongList (shouldMinimize: boolean) {
+  private async updateSongList (shouldMinimize: boolean) {
 
     if (shouldMinimize) {
       // Minimize player
