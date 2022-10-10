@@ -13,10 +13,18 @@ export class YTProgressUpdates implements ProgressUpdate {
 
   private progress: Progress;
 
+  /**
+   * Gets the progress of the current song as an object with currentTime and currentDuration properties.
+   */
   public get currentProgress() {
     return this.progress;
   }
 
+  /**
+   * Manages the progress of the song playing in the current YTMusicSession instance.
+   * @param {Page} page
+   * @param {ProgressUpdateSubscriber[]} initialSubscribers
+   */
   constructor(
     private page: Page,
     initialSubscribers?: ProgressUpdateSubscriber[]
@@ -26,16 +34,28 @@ export class YTProgressUpdates implements ProgressUpdate {
     this.handleProgressUpdate();
   }
 
+  /**
+   * Add a callback function to the list of subscribers to be invoked when the song progress updates.
+   * @param {ProgressUpdateSubscriber} callback
+   * @returns A string ID representing the current subscribers.
+   */
   public subscribe = (callback: ProgressUpdateSubscriber) => {
     const subscriberId = crypto.randomBytes(8).toString('hex');
     this.subscribers[subscriberId] = callback;
     return subscriberId;
   };
 
+  /**
+   * Removes a callback function from the list of subscribers.
+   * @param {string} subscriberId
+   */
   public unsubscribe = (subscriberId: string) => {
     delete this.subscribers[subscriberId];
   };
 
+  /**
+   * Force a lookup of the current song progress. Useful when the DOM first loads before a MutationObserver can be set up.
+   */
   public async forceProgressUpdate() {
     await this.page.waitForSelector(`video`);
 

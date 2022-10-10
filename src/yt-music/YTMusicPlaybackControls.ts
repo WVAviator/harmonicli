@@ -1,5 +1,8 @@
 import { Page } from 'puppeteer';
-import { PlaybackControls } from '../user-controls/PlaybackControls';
+import {
+  PlaybackActions,
+  PlaybackControls,
+} from '../user-controls/PlaybackControls';
 
 /**
  * An enum for the different types of controls that map to the appropriate selector in the DOM.
@@ -11,15 +14,20 @@ export enum YTControl {
 }
 
 export class YTMusicPlaybackControls implements PlaybackControls {
-
+  /**
+   * A helper class for managing the playback controls of a YTMusicSession.
+   */
   constructor(private page: Page) {}
 
-  public async execute(control: YTControl) {
+  private async execute(control: YTControl) {
     await this.page.waitForSelector(control);
     await this.page.click(control);
   }
 
-  public get controlActions() {
+  /**
+   * The available playback controls for a YTMusicSession.
+   */
+  public get controlActions(): PlaybackActions[] {
     return [
       { label: '⏮', value: () => this.execute(YTControl.Previous) },
       { label: '⏯', value: () => this.execute(YTControl.PlayPause) },

@@ -11,7 +11,7 @@ export const defaultYTSearchOptions: YTSearchOptions = {
 
 /**
  * Merges any passed in YTSearchOptions with the default, overriding any default options.
- * @param ytSearchOptions A partial object containing the default properties that should be overriden.
+ * @param {YTSearchOptions} ytSearchOptions A partial object containing the default properties that should be overriden.
  * @returns An updated complete YTSearchOptions object with all properties assigned.
  */
 export const mergeDefaultYTSearchOptions = (

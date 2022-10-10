@@ -2,6 +2,11 @@ import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
 import React, { useContext, useState } from 'react';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
 
+/**
+ * Displays available playback controls in the current browser context. The controls are displayed in adjacent boxes and can be selected with left and right arrows when the component is focused.
+ *
+ * The component can be focused with focus ID 'playback-controls'.
+ */
 const PlaybackControls: React.FC = () => {
   const session = useContext(BrowserSessionContext);
   const controls = session.PlaybackControls.controlActions;

@@ -5,9 +5,14 @@ import useSongProgress from '../hooks/useSongProgress';
 import Gradient from 'ink-gradient';
 import useStdoutDimensions from 'ink-use-stdout-dimensions';
 
-const getFormattedTimeString = (n: number) => {
-  const minutes = Math.floor(n / 60);
-  const seconds = Math.floor(n % 60);
+/**
+ * Converts a number representing seconds into a time string with both minutes and seconds.
+ * @param time The time in seconds
+ * @returns A string formatted with minutes and seconds, e.g. 5:34
+ */
+const getFormattedTimeString = (time: number) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
 
   const minutesString = minutes.toString();
   const secondsString = `${seconds < 10 ? '0' : ''}${seconds.toString()}`;
@@ -15,6 +20,9 @@ const getFormattedTimeString = (n: number) => {
   return `${minutesString}:${secondsString}`;
 };
 
+/**
+ * Displays song progress as a progress bar and adjacent time string.
+ */
 const SongProgress = () => {
   const { currentTime, currentDuration } = useSongProgress();
   const [columns] = useStdoutDimensions();

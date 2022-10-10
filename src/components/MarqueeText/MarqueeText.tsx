@@ -3,13 +3,31 @@ import { Text, TextProps } from 'ink';
 import { useEffect, useState } from 'react';
 
 interface MarqueeTextProps extends TextProps {
+  /**
+   * The text you wish to display in the terminal marquee-style.
+   */
   children: string;
+  /**
+   * The width of the final string that will be displayed at any given time. If the string is longer than maxWidth, the marquee will scroll to display the remaining text.
+   */
   maxWidth?: number;
+  /**
+   * The speed, in characters per second, that the marquee will scroll.
+   */
   speed?: number;
+  /**
+   * The time in milliseconds that the start of the string will display before starting to scroll.
+   */
   preDelay?: number;
+  /**
+   * The time in milliseconds that the end of the string will display before resetting back to the start.
+   */
   postDelay?: number;
 }
 
+/**
+ * Displays Ink Text with a limited width and a marquee-style scrolling effect.
+ */
 const MarqueeText: React.FC<MarqueeTextProps> = ({
   children,
   maxWidth = 50,

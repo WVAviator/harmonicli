@@ -99,6 +99,9 @@ export class YTMusicSession implements BrowserSession {
     await this.PlayUpdates.forceSongUpdate();
   }
 
+  /**
+   * Closes the browser and ends the session.
+   */
   public async close() {
     await this.page.browser().close();
   }
