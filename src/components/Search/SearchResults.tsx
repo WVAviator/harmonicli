@@ -21,7 +21,7 @@ export const SearchResults:FC<{state: SRState}> = ({state}) => {
   useInput ((_, key) => {
     if (!state.searchResultActive) return;
 
-    if (key.leftArrow) {
+    if (key.leftArrow || key.escape) {
       state.setSearchResultActive(false);
       focus('search-bar');
     }
