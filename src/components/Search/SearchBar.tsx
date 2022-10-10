@@ -6,7 +6,7 @@ import { SearchResults } from './SearchResults';
 
 export const SearchBar = () => {
   const { isFocused } = useFocus({ id: 'search-bar'});
-  const { focus, focusPrevious } = useFocusManager();
+  const { focus, focusPrevious, focusNext } = useFocusManager();
   const session = useContext(BrowserSessionContext);
   const [inputValue, setInputValue] = useState('');
   const [ searchResultActive, setSearchResultActive ] = useState(false);
@@ -17,6 +17,10 @@ export const SearchBar = () => {
     if (key.upArrow) {
       setSearchResultActive(false);
       focusPrevious();
+    }
+    if (key.downArrow) {
+      setSearchResultActive(false);
+      focusNext();
     }
   });
 
