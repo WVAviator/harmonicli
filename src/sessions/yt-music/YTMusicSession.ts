@@ -1,4 +1,4 @@
-import { BrowserSession } from './../user-controls/BrowserSession';
+import { BrowserSession } from '../base/BrowserSession';
 import {
   mergeDefaultYTSearchOptions,
   YTSearchOptions,
@@ -9,7 +9,7 @@ import Adblocker from 'puppeteer-extra-plugin-adblocker';
 import {
   mergeDefaultSessionOptions,
   SessionOptions,
-} from '../user-controls/SessionOptions';
+} from '../base/SessionOptions';
 import { YTPlayUpdates } from './YTPlayUpdates';
 import { YTMusicPlaybackControls } from './YTMusicPlaybackControls';
 import { YTProgressUpdates } from './YTProgressUpdates';

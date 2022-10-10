@@ -1,8 +1,5 @@
 import { Page } from 'puppeteer';
-import {
-  PlaybackActions,
-  PlaybackControls,
-} from '../user-controls/PlaybackControls';
+import { PlaybackActions, PlaybackControls } from '../base/PlaybackControls';
 
 /**
  * An enum for the different types of controls that map to the appropriate selector in the DOM.

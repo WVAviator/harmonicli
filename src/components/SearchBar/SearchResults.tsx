@@ -1,6 +1,6 @@
 import React, { useContext, FC } from 'react';
 import useSongList from '../../hooks/useSongList';
-import { BrowserSessionContext } from '../../BrowserSessionProvider';
+import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import SelectInput from 'ink-select-input/build';
 import { Text, useFocusManager, useInput } from 'ink';
 import Gradient from 'ink-gradient';

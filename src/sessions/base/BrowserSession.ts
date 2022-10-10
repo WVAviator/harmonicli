@@ -1,5 +1,5 @@
 import { VolumeControl } from './VolumeControl';
-import { ProgressUpdate } from '../progress-bar/ProgressUpdate';
+import { ProgressUpdate } from './ProgressUpdate';
 import { PlaybackControls } from './PlaybackControls';
 import { PlayUpdates } from './PlayUpdates';
 import { SearchHandler } from './SearchHandler';

@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import { BrowserSession } from './user-controls/BrowserSession';
+import { BrowserSession } from '../../sessions/base/BrowserSession';
 
 interface BrowserSessionProviderProps {
   /**

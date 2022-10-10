@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { BrowserSessionContext } from '../BrowserSessionProvider';
+import { BrowserSessionContext } from '../components/BrowserSessionProvider/BrowserSessionProvider';
 
 /**
  * Get the progress and duration of the song playing in the current browser session context.

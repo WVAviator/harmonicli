@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { BrowserSessionContext } from '../BrowserSessionProvider';
+import { BrowserSessionContext } from '../components/BrowserSessionProvider/BrowserSessionProvider';
 
 const useSongList = () => {
   const session = useContext(BrowserSessionContext);

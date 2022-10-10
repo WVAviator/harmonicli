@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { BrowserSessionContext } from '../BrowserSessionProvider';
+import { BrowserSessionContext } from '../components/BrowserSessionProvider/BrowserSessionProvider';
 
 /**
  * Get the name of the song and artist that are playing in the current browser session context.

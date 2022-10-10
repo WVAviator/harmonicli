@@ -1,15 +1,15 @@
 import React, { useContext, useState } from 'react';
 import TextInput from 'ink-text-input';
 import { Text, Box, useFocus, useInput, useFocusManager } from 'ink';
-import { BrowserSessionContext } from '../../BrowserSessionProvider';
+import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import { SearchResults } from './SearchResults';
 
 export const SearchBar = () => {
-  const { isFocused } = useFocus({ id: 'search-bar'});
+  const { isFocused } = useFocus({ id: 'search-bar' });
   const { focus, focusPrevious, focusNext } = useFocusManager();
   const session = useContext(BrowserSessionContext);
   const [inputValue, setInputValue] = useState('');
-  const [ searchResultActive, setSearchResultActive ] = useState(false);
+  const [searchResultActive, setSearchResultActive] = useState(false);
 
   useInput((_, key) => {
     if (!isFocused || searchResultActive) return;
@@ -28,13 +28,15 @@ export const SearchBar = () => {
     focus('search-selector');
     setSearchResultActive(true);
     session.SearchHandler.search(query);
-  }
+  };
 
   const view = () => {
     if (searchResultActive) {
       return (
         <Box>
-          <SearchResults state={{searchResultActive, setSearchResultActive}}/>
+          <SearchResults
+            state={{ searchResultActive, setSearchResultActive }}
+          />
         </Box>
       );
     }
@@ -48,17 +50,19 @@ export const SearchBar = () => {
 
     return (
       <Box>
-        <TextInput placeholder='Search 🔎' value={inputValue} onChange={setInputValue} onSubmit={handleSearchSubmit}/>
+        <TextInput
+          placeholder="Search 🔎"
+          value={inputValue}
+          onChange={setInputValue}
+          onSubmit={handleSearchSubmit}
+        />
       </Box>
     );
-
-  }
+  };
 
   return (
-    <Box 
-      borderStyle="round"
-      borderColor={isFocused ? 'yellow' : 'white'}>
+    <Box borderStyle="round" borderColor={isFocused ? 'yellow' : 'white'}>
       {view()}
     </Box>
-  )
-}
+  );
+};
