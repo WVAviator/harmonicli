@@ -1,6 +1,7 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
+import Gradient from 'ink-gradient';
 
 const MAX_VOLUME = 10;
 const VOLUME_STRING = '▁▂▂▃▃▄▄▅▅▆';
@@ -12,6 +13,18 @@ const VolumeControl: React.FC = () => {
 
   const { isFocused } = useFocus({ id: 'volume-control' });
   const { focusNext, focusPrevious } = useFocusManager();
+
+  const increaseVolume = () => {
+    if (volume === MAX_VOLUME) return;
+    session.VolumeControl.setVolume((volume + 1) / MAX_VOLUME);
+    setVolume((currentVolume) => currentVolume + 1);
+  };
+
+  const decreaseVolume = () => {
+    if (volume === 0) return;
+    session.VolumeControl.setVolume((volume - 1) / MAX_VOLUME);
+    setVolume((currentVolume) => currentVolume - 1);
+  };
 
   useEffect(() => {
     setVolume(session.VolumeControl.currentVolume * MAX_VOLUME);
@@ -30,17 +43,11 @@ const VolumeControl: React.FC = () => {
     }
 
     if (key.rightArrow && isSelected) {
-      setVolume((currentVolume) => {
-        if (currentVolume === MAX_VOLUME) return currentVolume;
-        return currentVolume + 1;
-      });
+      increaseVolume();
     }
 
     if (key.leftArrow && isSelected) {
-      setVolume((currentVolume) => {
-        if (currentVolume === 0) return currentVolume;
-        return currentVolume - 1;
-      });
+      decreaseVolume();
     }
 
     if (key.upArrow) {
@@ -63,7 +70,13 @@ const VolumeControl: React.FC = () => {
   return (
     <Box>
       <Text color={isFocused ? 'yellow' : 'white'}>{'> '}</Text>
-      <Text color={isSelected ? 'yellow' : 'white'}>{volumeString}</Text>
+      {isSelected ? (
+        <Text color="white">{volumeString}</Text>
+      ) : (
+        <Gradient name="summer">
+          <Text>{volumeString}</Text>
+        </Gradient>
+      )}
     </Box>
   );
 };
