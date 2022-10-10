@@ -1,5 +1,5 @@
 import { Page } from "puppeteer";
-import { SearchHandler, SearchListSubscriber, Song } from "../user-controls/SearchHandler";
+import { SearchHandler, SearchListSubscriber, SearchQuerySubscriber, Song } from "../user-controls/SearchHandler";
 import crypto from 'crypto';
 
 export class YTSearchHandler implements SearchHandler {
@@ -10,7 +10,7 @@ export class YTSearchHandler implements SearchHandler {
 
   constructor (page: Page) {
     this.page = page;
-    this.songList;
+    this.songList = [];
     this.subscribers = {};
   }
   
@@ -25,6 +25,7 @@ export class YTSearchHandler implements SearchHandler {
   }
 
   async play (playID: string) {
+    if (playID === 'No results found.') return;
     // Have to do it this way becuase some play buttons may be off the screen or under elements that will break things if clicked.
     await this.page.evaluate(
       (playID) => {
@@ -37,13 +38,18 @@ export class YTSearchHandler implements SearchHandler {
 
   async search (query: string | string[]) {
 
-
     if (query) {
       if (Array.isArray(query)) query = query.join(' ');
 
       // @ts-ignore becuase value does exist on Element
       const currentQuery = await this.page.evaluate(() => document.querySelector('div.search-box input').value);
       if (currentQuery == query) return;
+
+      // Reset songList.
+      this.songList = [];
+      Object.values(this.subscribers).forEach((cb: SearchListSubscriber) => cb(this.songList));
+
+
 
       // Click search bar (bring it to focus for next steps)
       await Promise.all([
@@ -71,6 +77,7 @@ export class YTSearchHandler implements SearchHandler {
   }
   
   private async updateSongList (shouldMinimize: boolean) {
+    let error = false;
 
     if (shouldMinimize) {
       // Minimize player
@@ -86,8 +93,15 @@ export class YTSearchHandler implements SearchHandler {
       this.page.evaluate(() => {
         // @ts-ignore because this element does have the click method.
         document.querySelector('tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer').click()
+      }).catch(err => {
+        // TODO: better error handling
+        this.songList = [{title: 'No results found.', artist: 'No results found.', duration: 'No results found.', playID: 'No results found.'}];
+        error = true;
+        Object.values(this.subscribers).forEach((cb: SearchListSubscriber) => cb(this.songList));
       }),
     ]);
+
+    if (error) return;
 
     // Update the songlist on idle.
     await this.page.waitForNetworkIdle();
