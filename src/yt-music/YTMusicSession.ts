@@ -33,7 +33,7 @@ export class YTMusicSession implements BrowserSession {
     this.PlayUpdates = new YTPlayUpdates(page);
     this.ProgressUpdates = new YTProgressUpdates(page);
     this.SearchHandler = new YTSearchHandler(page);
-    this.PlaybackControls = new YTMusicPlaybackControls(page, this.SearchHandler);
+    this.PlaybackControls = new YTMusicPlaybackControls(page);
     this.VolumeControl = new YTMusicVolumeControl(page);
   }
 
