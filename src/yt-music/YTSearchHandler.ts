@@ -1,5 +1,5 @@
 import { Page } from "puppeteer";
-import { SearchHandler, SearchListSubscriber, SearchQuerySubscriber, Song } from "../user-controls/SearchHandler";
+import { SearchHandler, SearchListSubscriber, Song } from "../user-controls/SearchHandler";
 import crypto from 'crypto';
 
 export class YTSearchHandler implements SearchHandler {
