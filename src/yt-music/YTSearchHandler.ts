@@ -52,7 +52,7 @@ export class YTSearchHandler implements SearchHandler {
 
   /**
    * Execute a search for music and update the song list.
-   * @param query s string or string array (that will be joined by a space) to use as the search query.
+   * @param query A string or string array (that will be joined by a space) to use as the search query.
    */
   public async search(query: string | string[]) {
     if (query) {
