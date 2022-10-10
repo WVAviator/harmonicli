@@ -13,13 +13,15 @@ import {
 import { YTPlayUpdates } from './YTPlayUpdates';
 import { YTMusicPlaybackControls } from './YTMusicPlaybackControls';
 import { YTProgressUpdates } from './YTProgressUpdates';
+import { YTMusicVolumeControl } from './YTMusicVolumeControl';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
 export class YTMusicSession implements BrowserSession {
   public PlayUpdates: YTPlayUpdates;
-  public ProgressUpdates: YTProgressUpdates
+  public ProgressUpdates: YTProgressUpdates;
   public PlaybackControls: YTMusicPlaybackControls;
+  public VolumeControl: YTMusicVolumeControl;
 
   /**
    * A YTMusicSession instance manages all headless browsing of the Youtube Music website. A YTMusicSession must be instantiated asynchronously via the 'create' function.
@@ -29,6 +31,7 @@ export class YTMusicSession implements BrowserSession {
     this.PlayUpdates = new YTPlayUpdates(page);
     this.ProgressUpdates = new YTProgressUpdates(page);
     this.PlaybackControls = new YTMusicPlaybackControls(page);
+    this.VolumeControl = new YTMusicVolumeControl(page);
   }
 
   /**
