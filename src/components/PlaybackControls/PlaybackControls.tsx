@@ -1,5 +1,4 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
-import FocusContext from 'ink/build/components/FocusContext';
 import React, { useContext, useState } from 'react';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
 
