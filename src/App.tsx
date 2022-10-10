@@ -8,6 +8,7 @@ import Spinner from 'ink-spinner';
 import SongProgress from './progress-bar/SongProgress';
 import NowPlaying from './components/NowPlaying/NowPlaying';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
+import { SearchBar } from './components/Search/SearchBar';
 
 interface AppProps {
   args?: string[];
@@ -42,6 +43,7 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
           <NowPlaying />
           <SongProgress />
           <PlaybackControls />
+          <SearchBar />
         </>
       ) : (
         <Text>
