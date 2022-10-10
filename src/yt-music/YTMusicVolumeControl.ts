@@ -5,15 +5,14 @@ export class YTMusicVolumeControl implements VolumeControl {
   private volume = 1;
 
   constructor(private page: Page) {
-    this.setInitialVolume();
+    this.getInitialVolume();
+    this.handleVideoUpdate();
   }
 
-  private async setInitialVolume() {
-    await this.page.waitForSelector('#volume-slider');
-    this.volume = await this.page.$eval('#volume-slider', (el) => {
-      const maxVolume = +el.getAttribute('max');
-      const currentVolume = +el.getAttribute('value');
-      return currentVolume / maxVolume;
+  private async getInitialVolume() {
+    await this.page.waitForSelector('video');
+    this.volume = await this.page.$eval('video', (el: HTMLVideoElement) => {
+      return el.volume;
     });
   }
 
@@ -21,9 +20,8 @@ export class YTMusicVolumeControl implements VolumeControl {
     return this.volume;
   }
 
-  async setVolume(volume: number) {
+  public async setVolume(volume: number) {
     if (volume < 0 || volume > 1) return;
-
     await this.page.$eval(
       'video',
       (el: HTMLVideoElement, volume) => {
@@ -32,5 +30,29 @@ export class YTMusicVolumeControl implements VolumeControl {
       volume
     );
     this.volume = volume;
+  }
+
+  private async handleVideoUpdate() {
+    //YT has internal functions that reset the volume of the video after it changes - sometime around 200ms later.
+    //This setup listens for video src changes and makes multiple attempts to keep the volume where it should be.
+    //Feels a little janky, but it works.
+    await this.page.exposeFunction('handleVideoUpdate', () => {
+      let count = 0;
+      const intervalID = setInterval(() => {
+        if (count++ < 15) this.setVolume(this.volume);
+        else clearInterval(intervalID);
+      }, 25);
+    });
+    await this.page.waitForSelector(`video`);
+    await this.page.evaluate(() => {
+      const videoObserver = new MutationObserver(() => {
+        //@ts-ignore
+        handleVideoUpdate();
+      });
+      videoObserver.observe(document.querySelector(`video`), {
+        attributes: true,
+        attributeFilter: ['src'],
+      });
+    });
   }
 }
