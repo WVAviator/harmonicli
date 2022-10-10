@@ -1,59 +1,85 @@
-import { Page } from "puppeteer";
-import { SearchHandler, SearchListSubscriber, Song } from "../user-controls/SearchHandler";
+import { Page } from 'puppeteer';
+import {
+  SearchHandler,
+  SearchListSubscriber,
+  Song,
+} from '../user-controls/SearchHandler';
 import crypto from 'crypto';
 
 export class YTSearchHandler implements SearchHandler {
-
   private page: Page;
   public songList: Song[];
-  private subscribers: {};
+  private subscribers: Record<string, SearchListSubscriber>;
 
-  constructor (page: Page) {
+  /**
+   * A helper class for managing the search functionality of a YTMusicSession.
+   * @param page The Puppeteer page of the YTMusicSession.
+   */
+  constructor(page: Page) {
     this.page = page;
     this.songList = [];
     this.subscribers = {};
   }
-  
-  subscribe (callback: SearchListSubscriber) {
+
+  /**
+   * Subscribe to updates to the search list.
+   * @param callback A callback to be invoked when the search list changes.
+   * @returns A unique id that can be used later to unsubscribe.
+   */
+  public subscribe(callback: SearchListSubscriber) {
     const subscriberId = crypto.randomBytes(8).toString('hex');
     this.subscribers[subscriberId] = callback;
     return subscriberId;
   }
 
-  unsubscribe (subscriberID: string) {
+  /**
+   * Unsubscribe from search list updates.
+   * @param subscriberID The ID returned from the original call to subscribe.
+   */
+  public unsubscribe(subscriberID: string) {
     delete this.subscribers[subscriberID];
   }
 
-  async play (playID: string) {
+  /**
+   * Activate the selected search result.
+   * @param playID The ID passed along with the search list for the selected item.
+   */
+  public async play(playID: string) {
     if (playID === 'No results found.') return;
     // Have to do it this way becuase some play buttons may be off the screen or under elements that will break things if clicked.
     await this.page.$eval(`.${playID}`, (el: HTMLElement) => el.click());
   }
 
-  async search (query: string | string[]) {
-
+  /**
+   * Execute a search for music and update the song list.
+   * @param query s string or string array (that will be joined by a space) to use as the search query.
+   */
+  public async search(query: string | string[]) {
     if (query) {
       if (Array.isArray(query)) query = query.join(' ');
 
-      const currentQuery = await this.page.$eval('div.search-box input', (el: HTMLInputElement) => el.value);
+      const currentQuery = await this.page.$eval(
+        'div.search-box input',
+        (el: HTMLInputElement) => el.value
+      );
       if (currentQuery == query) return;
 
       // Reset songList.
       this.songList = [];
-      Object.values(this.subscribers).forEach((cb: SearchListSubscriber) => cb(this.songList));
-
-
+      Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
+        cb(this.songList)
+      );
 
       // Click search bar (bring it to focus for next steps)
       await Promise.all([
         this.page.waitForSelector('div.search-box input'),
         this.page.click('div.search-box input'),
       ]);
-      
+
       // Clear search bar
       await this.page.keyboard.down('Shift');
       for (let i = 0; i < currentQuery.length; i++) {
-        await this.page.keyboard.press("ArrowLeft");
+        await this.page.keyboard.press('ArrowLeft');
       }
       await this.page.keyboard.up('Shift');
       await this.page.keyboard.press('Backspace');
@@ -66,10 +92,9 @@ export class YTSearchHandler implements SearchHandler {
     // Update songList and send to subscribers
     await this.page.waitForNetworkIdle();
     this.updateSongList(query.length <= 0);
-
   }
-  
-  private async updateSongList (shouldMinimize: boolean) {
+
+  private async updateSongList(shouldMinimize: boolean) {
     let error = false;
 
     if (shouldMinimize) {
@@ -79,20 +104,34 @@ export class YTSearchHandler implements SearchHandler {
         this.page.click('.player-minimize-button'),
       ]);
     }
-    
-    // Expand search results      
+
+    // Expand search results
     await Promise.all([
-      this.page.waitForSelector('tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'),
-      this.page.$eval(
-        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-        (el: HTMLAnchorElement) => {
-          el.click();
-        }).catch(err => {
-        // TODO: better error handling
-        this.songList = [{title: 'No results found.', artist: 'No results found.', duration: 'No results found.', playID: 'No results found.'}];
-        error = true;
-        Object.values(this.subscribers).forEach((cb: SearchListSubscriber) => cb(this.songList));
-      }),
+      this.page.waitForSelector(
+        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
+      ),
+      this.page
+        .$eval(
+          'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+          (el: HTMLAnchorElement) => {
+            el.click();
+          }
+        )
+        .catch((err) => {
+          // TODO: better error handling
+          this.songList = [
+            {
+              title: 'No results found.',
+              artist: 'No results found.',
+              duration: 'No results found.',
+              playID: 'No results found.',
+            },
+          ];
+          error = true;
+          Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
+            cb(this.songList)
+          );
+        }),
     ]);
 
     if (error) return;
@@ -121,35 +160,43 @@ export class YTSearchHandler implements SearchHandler {
     // );
 
     const songs: Song[] = await this.page.evaluate(() => {
-
       // Only the first 11 songs will have a play button attached.
       const getSongInfo = (elements) => {
         const info = [];
-        elements.forEach((element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
+        elements.forEach(
+          (element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
+            // There will be a better limit soon™️.
+            if (index >= 11) return;
 
-          // There will be a better limit soon™️.
-          if (index >= 11) return;
-
-          const playID = `_YTPlayButton-${index}`;
-          const playButton = element.querySelector('#play-button');
-          if (playButton) {
-            playButton.setAttribute('class', `${element.getAttribute('class')} ${playID}`);
+            const playID = `_YTPlayButton-${index}`;
+            const playButton = element.querySelector('#play-button');
+            if (playButton) {
+              playButton.setAttribute(
+                'class',
+                `${element.getAttribute('class')} ${playID}`
+              );
+            }
+            info.push({
+              title: element.querySelectorAll('a')[0].innerText,
+              artist: element.querySelectorAll('a')[1].innerText,
+              duration: element.querySelectorAll('span')[2].innerText,
+              playID: playButton ? playID : null,
+            });
           }
-          info.push({
-            title: element.querySelectorAll('a')[0].innerText,
-            artist: element.querySelectorAll('a')[1].innerText,
-            duration: element.querySelectorAll('span')[2].innerText,
-            playID: playButton ? playID : null,
-          });
-        });
+        );
         return info;
-      }
+      };
 
-      return getSongInfo(document.querySelectorAll('ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer'));
+      return getSongInfo(
+        document.querySelectorAll(
+          'ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer'
+        )
+      );
     });
 
     // Update the songlist for each hook.
-    Object.values(this.subscribers).forEach((cb: SearchListSubscriber) => cb(songs));
+    Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
+      cb(songs)
+    );
   }
-
 }
