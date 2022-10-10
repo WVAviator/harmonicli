@@ -1,11 +1,14 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
 import Gradient from 'ink-gradient';
 
 const MAX_VOLUME = 10;
 const VOLUME_STRING = '▁▂▂▃▃▄▄▅▅▆';
 
+/**
+ * A focusable component that allows changing the volume of the music. Focus can be set to this component with id 'volume-control'.
+ */
 const VolumeControl: React.FC = () => {
   const session = useContext(BrowserSessionContext);
   const [volume, setVolume] = useState(MAX_VOLUME);

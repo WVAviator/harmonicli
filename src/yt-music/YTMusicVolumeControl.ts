@@ -16,10 +16,17 @@ export class YTMusicVolumeControl implements VolumeControl {
     });
   }
 
+  /**
+   * The current volume of the music as a value from 0 to 1.
+   */
   public get currentVolume() {
     return this.volume;
   }
 
+  /**
+   * Updates the volume of the music.
+   * @param volume A value between 0 and 1 (0% to 100% volume) to which to set the music volume.
+   */
   public async setVolume(volume: number) {
     if (volume < 0 || volume > 1) return;
     await this.page.$eval(
@@ -33,7 +40,7 @@ export class YTMusicVolumeControl implements VolumeControl {
   }
 
   private async handleVideoUpdate() {
-    //YT has internal functions that reset the volume of the video after it changes - sometime around 200ms later.
+    //YT has internal functions that reset the volume of the video element after it changes - sometime around 200ms later.
     //This setup listens for video src changes and makes multiple attempts to keep the volume where it should be.
     //Feels a little janky, but it works.
     await this.page.exposeFunction('handleVideoUpdate', () => {
