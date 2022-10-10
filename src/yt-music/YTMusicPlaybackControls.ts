@@ -11,6 +11,7 @@ export enum YTControl {
 }
 
 export class YTMusicPlaybackControls implements PlaybackControls {
+
   constructor(private page: Page) {}
 
   public async execute(control: YTControl) {

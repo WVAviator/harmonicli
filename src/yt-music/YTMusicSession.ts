@@ -13,6 +13,7 @@ import {
 import { YTPlayUpdates } from './YTPlayUpdates';
 import { YTMusicPlaybackControls } from './YTMusicPlaybackControls';
 import { YTProgressUpdates } from './YTProgressUpdates';
+import { YTSearchHandler } from './YTSearchHandler';
 import { YTMusicVolumeControl } from './YTMusicVolumeControl';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
@@ -20,6 +21,7 @@ const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 export class YTMusicSession implements BrowserSession {
   public PlayUpdates: YTPlayUpdates;
   public ProgressUpdates: YTProgressUpdates;
+  public SearchHandler: YTSearchHandler;
   public PlaybackControls: YTMusicPlaybackControls;
   public VolumeControl: YTMusicVolumeControl;
 
@@ -30,6 +32,7 @@ export class YTMusicSession implements BrowserSession {
   private constructor(private page: Page) {
     this.PlayUpdates = new YTPlayUpdates(page);
     this.ProgressUpdates = new YTProgressUpdates(page);
+    this.SearchHandler = new YTSearchHandler(page);
     this.PlaybackControls = new YTMusicPlaybackControls(page);
     this.VolumeControl = new YTMusicVolumeControl(page);
   }
