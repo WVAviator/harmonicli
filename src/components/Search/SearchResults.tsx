@@ -63,7 +63,5 @@ export const SearchResults:FC<{state: SRState}> = ({state}) => {
     );
   }
 
-  return (
-    <></>
-  );
+  return null;
 }
