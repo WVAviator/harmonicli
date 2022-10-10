@@ -1,3 +1,4 @@
+import { VolumeControl } from './VolumeControl';
 import { ProgressUpdate } from '../progress-bar/ProgressUpdate';
 import { PlaybackControls } from './PlaybackControls';
 import { PlayUpdates } from './PlayUpdates';
@@ -9,5 +10,6 @@ export interface BrowserSession {
   PlayUpdates: PlayUpdates;
   ProgressUpdates: ProgressUpdate;
   SearchHandler: SearchHandler;
+  VolumeControl: VolumeControl;
   close: () => Promise<void>;
 }

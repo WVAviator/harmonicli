@@ -9,6 +9,7 @@ import SongProgress from './progress-bar/SongProgress';
 import NowPlaying from './components/NowPlaying/NowPlaying';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import { SearchBar } from './components/Search/SearchBar';
+import VolumeControl from './components/VolumeControl/VolumeControl';
 
 interface AppProps {
   args?: string[];
@@ -43,6 +44,7 @@ export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
           <NowPlaying />
           <SongProgress />
           <PlaybackControls />
+          <VolumeControl />
           <SearchBar />
         </>
       ) : (
