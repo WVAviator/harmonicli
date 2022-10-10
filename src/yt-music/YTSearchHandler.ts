@@ -27,13 +27,7 @@ export class YTSearchHandler implements SearchHandler {
   async play (playID: string) {
     if (playID === 'No results found.') return;
     // Have to do it this way becuase some play buttons may be off the screen or under elements that will break things if clicked.
-    await this.page.evaluate(
-      (playID) => {
-        // @ts-ignore because it will have click method.
-        document.querySelector(`.${playID}`).click();
-      },
-      playID
-    );
+    await this.page.$eval(`.${playID}`, (el: HTMLElement) => el.click());
   }
 
   async search (query: string | string[]) {
@@ -41,8 +35,7 @@ export class YTSearchHandler implements SearchHandler {
     if (query) {
       if (Array.isArray(query)) query = query.join(' ');
 
-      // @ts-ignore becuase value does exist on Element
-      const currentQuery = await this.page.evaluate(() => document.querySelector('div.search-box input').value);
+      const currentQuery = await this.page.$eval('div.search-box input', (el: HTMLInputElement) => el.value);
       if (currentQuery == query) return;
 
       // Reset songList.
@@ -90,10 +83,11 @@ export class YTSearchHandler implements SearchHandler {
     // Expand search results      
     await Promise.all([
       this.page.waitForSelector('tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'),
-      this.page.evaluate(() => {
-        // @ts-ignore because this element does have the click method.
-        document.querySelector('tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer').click()
-      }).catch(err => {
+      this.page.$eval(
+        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+        (el: HTMLAnchorElement) => {
+          el.click();
+        }).catch(err => {
         // TODO: better error handling
         this.songList = [{title: 'No results found.', artist: 'No results found.', duration: 'No results found.', playID: 'No results found.'}];
         error = true;
@@ -107,14 +101,33 @@ export class YTSearchHandler implements SearchHandler {
     await this.page.waitForNetworkIdle();
 
     // Format the song info so we can pass to the song selector.
+
+    // This didn't work? Will play with later.
+    // const songs: Song[] = await this.page.$$eval(
+    //   'ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer',
+    //   (elements) => {
+    //     return elements.map((element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
+    //       if (index >= 11) return;
+    //       const playID = `_YTPlayButton-${index}`;
+    //       element.querySelector('#play-button')?.setAttribute('class', `${element.getAttribute('class')} ${playID}`);
+    //       return ({
+    //         title: element.querySelectorAll('a')[0].innerText,
+    //         artist: element.querySelectorAll('a')[1].innerText,
+    //         duration: element.querySelectorAll('span')[2].innerText,
+    //         playID: playID,
+    //       });
+    //     });
+    //   }
+    // );
+
     const songs: Song[] = await this.page.evaluate(() => {
 
       // Only the first 11 songs will have a play button attached.
       const getSongInfo = (elements) => {
         const info = [];
-        elements.forEach((element, index) => {
+        elements.forEach((element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
 
-          // There will be a better limit soon.
+          // There will be a better limit soon™️.
           if (index >= 11) return;
 
           const playID = `_YTPlayButton-${index}`;
