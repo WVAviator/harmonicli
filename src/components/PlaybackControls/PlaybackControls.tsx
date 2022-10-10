@@ -1,4 +1,5 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
+import FocusContext from 'ink/build/components/FocusContext';
 import React, { useContext, useState } from 'react';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
 
@@ -9,7 +10,7 @@ const PlaybackControls: React.FC = () => {
   const [selectedControlIndex, setSelectedControlIndex] = useState(1);
 
   const { isFocused } = useFocus({ autoFocus: true, id: 'playback-controls' });
-  const { focus } = useFocusManager();
+  const { focusNext } = useFocusManager();
 
   useInput((_, key) => {
     if (!isFocused) return;
@@ -24,7 +25,7 @@ const PlaybackControls: React.FC = () => {
     }
     if (key.downArrow) {
       setSelectedControlIndex(1);
-      focus('search-bar');
+      focusNext();
     }
     if (key.return) {
       controls[selectedControlIndex].value();
