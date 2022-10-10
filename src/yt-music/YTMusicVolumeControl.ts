@@ -40,26 +40,16 @@ export class YTMusicVolumeControl implements VolumeControl {
   }
 
   private async handleVideoUpdate() {
-    //YT has internal functions that reset the volume of the video element after it changes - sometime around 200ms later.
-    //This setup listens for video src changes and makes multiple attempts to keep the volume where it should be.
-    //Feels a little janky, but it works.
-    await this.page.exposeFunction('handleVideoUpdate', () => {
-      let count = 0;
-      const intervalID = setInterval(() => {
-        if (count++ < 15) this.setVolume(this.volume);
-        else clearInterval(intervalID);
-      }, 25);
+    await this.page.exposeFunction('onCanPlay', () => {
+      this.setVolume(this.volume);
     });
-    await this.page.waitForSelector(`video`);
+
+    await this.page.waitForSelector('video');
+
     await this.page.evaluate(() => {
-      const videoObserver = new MutationObserver(() => {
-        //@ts-ignore
-        handleVideoUpdate();
-      });
-      videoObserver.observe(document.querySelector(`video`), {
-        attributes: true,
-        attributeFilter: ['src'],
-      });
+      const video = document.querySelector('video');
+      //@ts-ignore
+      video.addEventListener('canplay', onCanPlay);
     });
   }
 }
