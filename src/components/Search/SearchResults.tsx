@@ -1,24 +1,30 @@
-import React, { useContext, FC } from "react";
-import useSongList from "../../hooks/useSongList";
-import { BrowserSessionContext } from "../../BrowserSessionProvider";
-import SelectInput from "ink-select-input/build";
-import { Text, useFocusManager, useInput } from "ink";
+import React, { useContext, FC } from 'react';
+import useSongList from '../../hooks/useSongList';
+import { BrowserSessionContext } from '../../BrowserSessionProvider';
+import SelectInput from 'ink-select-input/build';
+import { Text, useFocusManager, useInput } from 'ink';
 import Gradient from 'ink-gradient';
 import Spinner from 'ink-spinner';
 
 type SRState = {
-  searchResultActive: boolean,
-  setSearchResultActive: React.Dispatch<React.SetStateAction<boolean>>,
+  searchResultActive: boolean;
+  setSearchResultActive: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+interface SearchResultsProps {
+  /**
+   * The React state representing whether the user has initiated a search.
+   */
+  state: SRState;
 }
 
-export const SearchResults:FC<{state: SRState}> = ({state}) => {
-
+export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
   const session = useContext(BrowserSessionContext);
   const songList = useSongList();
 
   const { focus } = useFocusManager();
 
-  useInput ((_, key) => {
+  useInput((_, key) => {
     if (!state.searchResultActive) return;
 
     if (key.leftArrow || key.escape) {
@@ -28,19 +34,19 @@ export const SearchResults:FC<{state: SRState}> = ({state}) => {
     if (key.rightArrow) {
       // do nothing for now.
     }
-  })
+  });
 
   const handleSelect = (selection) => {
     state.setSearchResultActive(false);
     focus('playback-controls');
     session.SearchHandler.play(selection.value);
-  }
+  };
 
-  const parsedSongSelections = songList?.map(song => {
-    return ({
+  const parsedSongSelections = songList?.map((song) => {
+    return {
       label: `${song.title} | ${song.artist} | ${song.duration}`,
       value: song.playID,
-    })
+    };
   });
 
   if (state.searchResultActive) {
@@ -53,15 +59,15 @@ export const SearchResults:FC<{state: SRState}> = ({state}) => {
     }
     return (
       <Text>
-      <Gradient name="summer">
-        <Text>
-          <Spinner type="bouncingBall" />
-        </Text>
-      </Gradient>
-      {' Loading Results'}
-    </Text>
+        <Gradient name="summer">
+          <Text>
+            <Spinner type="bouncingBall" />
+          </Text>
+        </Gradient>
+        {' Loading Results'}
+      </Text>
     );
   }
 
   return null;
-}
+};
