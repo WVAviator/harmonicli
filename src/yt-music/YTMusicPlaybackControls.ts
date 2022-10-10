@@ -1,6 +1,5 @@
 import { Page } from 'puppeteer';
 import { PlaybackControls } from '../user-controls/PlaybackControls';
-import { YTSearchHandler } from './YTSearchHandler';
 
 /**
  * An enum for the different types of controls that map to the appropriate selector in the DOM.
@@ -13,7 +12,7 @@ export enum YTControl {
 
 export class YTMusicPlaybackControls implements PlaybackControls {
 
-  constructor(private page: Page, private SearchHandler: YTSearchHandler) {}
+  constructor(private page: Page) {}
 
   public async execute(control: YTControl) {
     await this.page.waitForSelector(control);
