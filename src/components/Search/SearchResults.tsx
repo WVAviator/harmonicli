@@ -2,7 +2,7 @@ import React, { useContext, FC } from "react";
 import useSongList from "../../hooks/useSongList";
 import { BrowserSessionContext } from "../../BrowserSessionProvider";
 import SelectInput from "ink-select-input/build";
-import { Text, useFocus, useFocusManager, useInput } from "ink";
+import { Text, useFocusManager, useInput } from "ink";
 import Gradient from 'ink-gradient';
 import Spinner from 'ink-spinner';
 
@@ -14,15 +14,11 @@ type SRState = {
 export const SearchResults:FC<{state: SRState}> = ({state}) => {
 
   const session = useContext(BrowserSessionContext);
-
   const songList = useSongList();
 
-  const { isFocused } = useFocus({id: 'search-selector'});
   const { focus } = useFocusManager();
-  // const [ searchResultActive, setSearchResultActive ] = useSearchResultsActive();
 
   useInput ((_, key) => {
-    // if (!isFocused) return;
     if (!state.searchResultActive) return;
 
     if (key.leftArrow) {
@@ -30,7 +26,7 @@ export const SearchResults:FC<{state: SRState}> = ({state}) => {
       focus('search-bar');
     }
     if (key.rightArrow) {
-      // do nothing.
+      // do nothing for now.
     }
   })
 
@@ -46,9 +42,6 @@ export const SearchResults:FC<{state: SRState}> = ({state}) => {
       value: song.playID,
     })
   });
-
-  // console.log(`Search res active: ${searchResultActive}`);
-  // if (!state.searchResultActive) focus('search-bar');
 
   if (state.searchResultActive) {
     if (songList?.at(0) !== undefined) {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import TextInput from 'ink-text-input';
 import { Text, Box, useFocus, useInput, useFocusManager } from 'ink';
 import { BrowserSessionContext } from '../../BrowserSessionProvider';
@@ -7,7 +7,6 @@ import { SearchResults } from './SearchResults';
 export const SearchBar = () => {
   const { isFocused } = useFocus({ id: 'search-bar'});
   const { focus } = useFocusManager();
-
   const session = useContext(BrowserSessionContext);
   const [inputValue, setInputValue] = useState('');
   const [ searchResultActive, setSearchResultActive ] = useState(false);
@@ -19,10 +18,6 @@ export const SearchBar = () => {
       setSearchResultActive(false);
       focus('playback-controls');
     }
-    // if (key.downArrow) {
-    //   focus('search-selector');
-    //   setSearchResultActive(true);
-    // }
   });
 
   const handleSearchSubmit = function (query: string) {
@@ -30,8 +25,6 @@ export const SearchBar = () => {
     setSearchResultActive(true);
     session.SearchHandler.search(query);
   }
-
-  // if (searchResultActive) focus('search-selector');
 
   const view = () => {
     if (searchResultActive) {
@@ -60,7 +53,7 @@ export const SearchBar = () => {
   return (
     <Box 
       borderStyle="round"
-      borderColor={isFocused ? 'red' : 'white'}>
+      borderColor={isFocused ? 'yellow' : 'white'}>
       {view()}
     </Box>
   )
