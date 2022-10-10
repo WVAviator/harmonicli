@@ -1,7 +1,7 @@
 import React from 'react';
-import ProgressBar from '../components/ProgressBar/ProgressBar';
+import ProgressBar from '../ProgressBar/ProgressBar';
 import { Box, Text } from 'ink';
-import useSongProgress from '../hooks/useSongProgress';
+import useSongProgress from '../../hooks/useSongProgress';
 import Gradient from 'ink-gradient';
 import useStdoutDimensions from 'ink-use-stdout-dimensions';
 

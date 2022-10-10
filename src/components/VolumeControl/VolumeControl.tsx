@@ -1,6 +1,6 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
 import React, { useContext, useEffect, useState } from 'react';
-import { BrowserSessionContext } from '../../BrowserSessionProvider';
+import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import Gradient from 'ink-gradient';
 
 const MAX_VOLUME = 10;

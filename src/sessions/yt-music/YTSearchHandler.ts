@@ -3,7 +3,7 @@ import {
   SearchHandler,
   SearchListSubscriber,
   Song,
-} from '../user-controls/SearchHandler';
+} from '../base/SearchHandler';
 import crypto from 'crypto';
 
 export class YTSearchHandler implements SearchHandler {

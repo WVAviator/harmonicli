@@ -1,9 +1,6 @@
 import crypto from 'crypto';
 import { Page } from 'puppeteer';
-import {
-  PlayUpdates,
-  PlayUpdateSubscriber,
-} from '../user-controls/PlayUpdates';
+import { PlayUpdates, PlayUpdateSubscriber } from '../base/PlayUpdates';
 
 export class YTPlayUpdates implements PlayUpdates {
   private subscribers: Record<string, PlayUpdateSubscriber> = {};

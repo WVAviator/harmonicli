@@ -4,7 +4,7 @@ import {
   Progress,
   ProgressUpdate,
   ProgressUpdateSubscriber,
-} from '../progress-bar/ProgressUpdate';
+} from '../base/ProgressUpdate';
 
 // This is pretty much the same as YTPlayUpdates
 

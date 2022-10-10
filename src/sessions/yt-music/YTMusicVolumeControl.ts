@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { VolumeControl } from '../user-controls/VolumeControl';
+import { VolumeControl } from '../base/VolumeControl';
 
 export class YTMusicVolumeControl implements VolumeControl {
   private volume = 1;

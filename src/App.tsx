@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { YTMusicSession } from './yt-music/YTMusicSession';
-import BrowserSessionProvider from './BrowserSessionProvider';
-import { SessionOptions } from './user-controls/SessionOptions';
+import { YTMusicSession } from './sessions/yt-music/YTMusicSession';
+import BrowserSessionProvider from './components/BrowserSessionProvider/BrowserSessionProvider';
+import { SessionOptions } from './sessions/base/SessionOptions';
 import { Text } from 'ink';
 import Gradient from 'ink-gradient';
 import Spinner from 'ink-spinner';
-import SongProgress from './progress-bar/SongProgress';
+import SongProgress from './components/SongProgress/SongProgress';
 import NowPlaying from './components/NowPlaying/NowPlaying';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
-import { SearchBar } from './components/Search/SearchBar';
+import { SearchBar } from './components/SearchBar/SearchBar';
 import VolumeControl from './components/VolumeControl/VolumeControl';
 
 interface AppProps {
