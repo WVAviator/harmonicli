@@ -35,7 +35,7 @@ export class YTMusicVolumeControl implements VolumeControl {
         volumeSlider.value = Math.floor(volume * 100);
         volumeSlider.dispatchEvent(new Event('change'));
       },
-      this.volume
+      volume
     );
     this.volume = volume;
   }
