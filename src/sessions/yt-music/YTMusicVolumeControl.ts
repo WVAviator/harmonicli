@@ -30,9 +30,8 @@ export class YTMusicVolumeControl implements VolumeControl {
     if (volume < 0 || volume > 1) return;
     await this.page.evaluate(
       (volume: number) => {
-        const volumeSlider: HTMLElement = document.querySelector('#volume-slider');
-        // @ts-ignore becuase YT music uses a custom HTML element for this.
-        volumeSlider.value = Math.floor(volume * 100);
+        const volumeSlider: HTMLInputElement = document.querySelector('#volume-slider');
+        volumeSlider.value = Math.floor(volume * 100).toString();
         volumeSlider.dispatchEvent(new Event('change'));
       },
       volume
