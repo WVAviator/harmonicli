@@ -105,36 +105,49 @@ export class YTSearchHandler implements SearchHandler {
       ]);
     }
 
-    // Expand search results
-    await Promise.all([
-      this.page.waitForSelector(
-        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
-      ),
-      this.page
-        .$eval(
-          'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-          (el: HTMLAnchorElement) => {
-            el.click();
-          }
-        )
-        .catch((err) => {
-          // TODO: better error handling
-          this.songList = [
-            {
-              title: 'No results found.',
-              artist: 'No results found.',
-              duration: 'No results found.',
-              playID: 'No results found.',
-            },
-          ];
-          error = true;
-          Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
-            cb(this.songList)
-          );
-        }),
-    ]);
+    // Click song filter
+    await this.page.click('a[title="Show song results"]').catch(_ => error = true);
 
-    if (error) return;
+    // Wait for the song element selector if it exists.
+    if (!error) await this.page.waitForSelector('tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer');
+
+    // Check for songs.
+    await this.page.$$eval(
+      'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+      (songs) => {
+        if (songs.length <= 0) error = true;
+      }
+    );
+
+    // Expand search results
+    await this.page
+      .$eval(
+        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+        (el: HTMLAnchorElement) => {
+          el.click();
+        }
+      )
+      .catch((err) => {
+        error = true;
+      });
+
+    // If there are errors, show no results found.
+    if (error) {
+      this.songList = [
+        {
+          title: 'No results found.',
+          artist: 'No results found.',
+          duration: 'No results found.',
+          playID: 'No results found.',
+        },
+      ];
+
+      Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
+        cb(this.songList)
+      );
+      
+      return;
+    };
 
     // Update the songlist on idle.
     await this.page.waitForNetworkIdle();
