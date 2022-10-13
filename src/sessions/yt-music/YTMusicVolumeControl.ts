@@ -6,7 +6,6 @@ export class YTMusicVolumeControl implements VolumeControl {
 
   constructor(private page: Page) {
     this.getInitialVolume();
-    this.handleVideoUpdate();
   }
 
   private async getInitialVolume() {
@@ -29,27 +28,15 @@ export class YTMusicVolumeControl implements VolumeControl {
    */
   public async setVolume(volume: number) {
     if (volume < 0 || volume > 1) return;
-    await this.page.$eval(
-      'video',
-      (el: HTMLVideoElement, volume) => {
-        el.volume = volume;
+    await this.page.evaluate(
+      (volume: number) => {
+        const volumeSlider: HTMLElement = document.querySelector('#volume-slider');
+        // @ts-ignore becuase YT music uses a custom HTML element for this.
+        volumeSlider.value = Math.floor(volume * 100);
+        volumeSlider.dispatchEvent(new Event('change'));
       },
-      volume
+      this.volume
     );
     this.volume = volume;
-  }
-
-  private async handleVideoUpdate() {
-    await this.page.exposeFunction('onCanPlay', () => {
-      this.setVolume(this.volume);
-    });
-
-    await this.page.waitForSelector('video');
-
-    await this.page.evaluate(() => {
-      const video = document.querySelector('video');
-      //@ts-ignore
-      video.addEventListener('canplay', onCanPlay);
-    });
   }
 }
