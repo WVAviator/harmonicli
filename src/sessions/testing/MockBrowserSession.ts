@@ -4,6 +4,7 @@ import { PlayUpdates } from '../base/PlayUpdates';
 import { ProgressUpdate } from '../base/ProgressUpdate';
 import { SearchHandler } from '../base/SearchHandler';
 import { VolumeControl } from '../base/VolumeControl';
+import { MockPlayUpdates } from './MockPlayUpdates';
 
 export class MockBrowserSession implements BrowserSession {
   search: (args: string[]) => Promise<void>;
@@ -14,12 +15,7 @@ export class MockBrowserSession implements BrowserSession {
       { label: '⏭', value: jest.fn },
     ],
   };
-  PlayUpdates: PlayUpdates = {
-    nowPlaying: 'Old Town Road | Lil Nas X',
-    subscribe: jest.fn((callback) => '12345'),
-    unsubscribe: jest.fn,
-    forceSongUpdate: jest.fn,
-  };
+  PlayUpdates = new MockPlayUpdates();
   ProgressUpdates: ProgressUpdate = {
     currentProgress: {
       currentTime: 5,

@@ -32,4 +32,25 @@ describe('NowPlaying', () => {
     expect(removeANSI(frames[0]).includes('Test')).toBe(true);
     unmount();
   });
+
+  it('should rerender when the song updates', async () => {
+    const mockSession = new MockBrowserSession();
+    mockSession.PlayUpdates.nowPlaying = 'ABC';
+
+    const { unmount, frames } = render(
+      <BrowserSessionProvider value={mockSession}>
+        <NowPlaying />
+      </BrowserSessionProvider>
+    );
+
+    expect(removeANSI(frames[0]).includes('ABC')).toBe(true);
+
+    await new Promise((res) => setTimeout(res, 100));
+
+    mockSession.PlayUpdates.nowPlaying = 'DEF';
+
+    expect(removeANSI(frames[1]).includes('DEF')).toBe(true);
+
+    unmount();
+  });
 });
