@@ -83,6 +83,16 @@ export class YTMusicSession implements BrowserSession {
       waitUntil: 'networkidle2',
     });
 
+    // Make sure we get only songs.
+    await this.page.click('a[title="Show song results"]').catch(_ => {
+        /**
+         * The below should only run if there are no results.
+         * If there are any issues we'll have to switch to the try/catch method to be more explicit.
+         */
+        console.log('No results found.');
+        process.exit(0);
+      });
+
     const searchResultsSelector =
       'ytmusic-shelf-renderer:first-of-type div#contents ytmusic-responsive-list-item-renderer #play-button';
 
