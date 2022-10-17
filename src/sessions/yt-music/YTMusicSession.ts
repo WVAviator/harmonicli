@@ -83,16 +83,15 @@ export class YTMusicSession implements BrowserSession {
       waitUntil: 'networkidle2',
     });
 
-    // Make sure we have something to click.
-    await this.page.$eval(
-      'yt-formatted-string.text.style-scope.ytmusic-message-renderer', 
-      (element: HTMLSpanElement | HTMLParagraphElement) => {
-        if (element.innerText === 'No results found') new Error('No results found.');
-      }).catch(_ => {
-        // Cancel catch... This should only fire when the element is not found meaning we have song results.
-      });
     // Make sure we get only songs.
-    await this.page.click('a[title="Show song results"]').catch(_ => new Error('Search element not found.'));
+    await this.page.click('a[title="Show song results"]').catch(_ => {
+        /**
+         * The below should only run if there are no results.
+         * If there are any issues we'll have to switch to the try/catch method to be more explicit.
+         */
+        console.log('No results found.');
+        process.exit(0);
+      });
 
     const searchResultsSelector =
       'ytmusic-shelf-renderer:first-of-type div#contents ytmusic-responsive-list-item-renderer #play-button';
