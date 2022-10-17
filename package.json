@@ -8,9 +8,9 @@
   },
   "scripts": {
     "link": "sudo npm link",
-    "dev": "ts-node src/index.tsx",
+    "dev": "yarn ts-node src/index.tsx",
     "start": "yarn build && ./bin/index.js old town road --no-headless",
-    "build": "tsc && chmod u+x ./bin/index.js",
+    "build": "yarn tsc && chmod u+x ./bin/index.js",
     "install:local": "yarn build && sudo npm i -g .",
     "test": "jest"
   },
