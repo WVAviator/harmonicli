@@ -45,8 +45,7 @@ export class YTMusicSession extends BrowserSession {
 
   /**
    * Asynchronously creates an instance of a YTMusicSession. A YTMusicSession instance manages all headless browsing of the Youtube Music website.
-   * @param args Any search query arguments entered by the user. These will automatically initiate a search.
-   * @param sessionOptions Any additional options for the session.
+   * @param sessionOptions Options for the session, to include any search arguments.
    * @returns An instance of a YTMusicSession.
    */
   public static async create(sessionOptions?: Partial<SessionOptions>) {
@@ -105,6 +104,9 @@ export class YTMusicSession extends BrowserSession {
     await this.playUpdates.forceSongUpdate();
   }
 
+  /**
+   * Get or set the current music volume.
+   */
   public get volume() {
     return this.volumeControl.currentVolume;
   }
@@ -113,15 +115,27 @@ export class YTMusicSession extends BrowserSession {
     this.volumeControl.setVolume(value);
   }
 
+  /**
+   * Provides playback control to pause, play, or change the current song. Options are 'playPause', 'next', and 'previous'.
+   */
   public controls = {
     playPause: () => this.playbackControls.playPause(),
     next: () => this.playbackControls.next(),
     previous: () => this.playbackControls.previous(),
   };
 
+  /**
+   * Execute a search for a specified query. The searchResults property will be populated once the search is completed.
+   * @param query
+   */
   public async search(query: string): Promise<void> {
     await this.searchHandler.search(query);
   }
+
+  /**
+   * Select a song by its playID from a the list of searchResults, and play it.
+   * @param playID
+   */
   public async select(playID: string): Promise<void> {
     await this.searchHandler.play(playID);
     await this.playUpdates.forceSongUpdate();
