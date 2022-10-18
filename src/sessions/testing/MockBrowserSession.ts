@@ -1,47 +1,25 @@
-import { BrowserSession } from '../base/BrowserSession';
-import { PlaybackControls } from '../base/PlaybackControls';
-import { PlayUpdates } from '../base/PlayUpdates';
-import { ProgressUpdate } from '../base/ProgressUpdate';
-import { SearchHandler } from '../base/SearchHandler';
-import { VolumeControl } from '../base/VolumeControl';
-import { MockPlayUpdates } from './MockPlayUpdates';
+import { BrowserSession, Song } from '../base/BrowserSession';
 
-export class MockBrowserSession implements BrowserSession {
-  search: (args: string[]) => Promise<void>;
-  PlaybackControls: PlaybackControls = {
-    controlActions: [
-      { label: '⏮', value: jest.fn },
-      { label: '⏯', value: jest.fn },
-      { label: '⏭', value: jest.fn },
-    ],
+export class MockBrowserSession extends BrowserSession {
+  public static create() {
+    return new MockBrowserSession();
+  }
+  public search(query: string): Promise<void> {
+    return;
+  }
+  public select(playID: string): Promise<void> {
+    return;
+  }
+  public controls: {
+    playPause: () => void;
+    next: () => void;
+    previous: () => void;
   };
-  PlayUpdates = new MockPlayUpdates();
-  ProgressUpdates: ProgressUpdate = {
-    currentProgress: {
-      currentTime: 5,
-      currentDuration: 10,
-    },
-    subscribe: jest.fn((callback) => '12345'),
-    unsubscribe: jest.fn,
-    forceProgressUpdate: jest.fn,
-  };
-  SearchHandler: SearchHandler = {
-    songList: [
-      {
-        title: 'Old Town Road',
-        artist: 'Lil Nas X',
-        duration: '3:28',
-        playID: '12345',
-      },
-    ],
-    play: jest.fn,
-    search: jest.fn,
-    subscribe: jest.fn((callback) => '12345'),
-    unsubscribe: jest.fn,
-  };
-  VolumeControl: VolumeControl = {
-    currentVolume: 0.8,
-    setVolume: jest.fn,
-  };
-  close: () => Promise<void>;
+  public close(): Promise<void> {
+    return;
+  }
+
+  public updateCurrentSong(song: Song) {
+    this.currentSong = song;
+  }
 }
