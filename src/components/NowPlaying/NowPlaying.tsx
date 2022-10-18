@@ -9,14 +9,14 @@ import MarqueeText from '../MarqueeText/MarqueeText';
  * Displays the current song and artist in the current browser context, formatted in bold with a gradient. If the string is too long, it will scroll with a marquee effect.
  */
 const NowPlaying: React.FC = () => {
-  const nowPlaying = useNowPlaying();
+  const { song, artist } = useNowPlaying();
   const [columns] = useStdoutDimensions();
 
   return (
     <Box paddingX={1} width="50%" borderStyle="round">
       <Gradient name="summer">
         <MarqueeText maxWidth={columns * 0.5 - 4} bold>
-          {nowPlaying}
+          {`${song} | ${artist}`}
         </MarqueeText>
       </Gradient>
     </Box>

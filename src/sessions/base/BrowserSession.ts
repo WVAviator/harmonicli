@@ -61,7 +61,7 @@ export abstract class BrowserSession {
 
   public addListener<T extends keyof this>(
     property: T,
-    callback: (value: T) => void
+    callback: (value: this[T]) => void
   ) {
     if (!(property in this._listeners)) this._listeners[property] = new Set();
     this._listeners[property].add(callback);
@@ -69,7 +69,7 @@ export abstract class BrowserSession {
 
   public removeListener<T extends keyof this>(
     property: T,
-    callback: (value: T) => void
+    callback: (value: this[T]) => void
   ) {
     if (!(property in this._listeners)) return;
     this._listeners[property].delete(callback);
@@ -131,8 +131,8 @@ export interface Progress {
 }
 
 export interface Song {
-  title: string;
+  song: string;
   artist: string;
-  duration: string;
-  playID: string;
+  duration: number;
+  playID?: string;
 }

@@ -1,49 +1,30 @@
-import crypto from 'crypto';
 import { Page } from 'puppeteer';
-import { PlayUpdates, PlayUpdateSubscriber } from '../base/PlayUpdates';
+import { Song } from '../base/BrowserSession';
 
-export class YTPlayUpdates implements PlayUpdates {
-  private subscribers: Record<string, PlayUpdateSubscriber> = {};
-
-  private currentSong: string;
-  private currentArtist: string;
-
-  /**
-   * A formatted display string that indicates the current song and artist that is playing.
-   */
-  public get nowPlaying() {
-    return `${this.currentSong} | ${this.currentArtist}`;
-  }
+export class YTPlayUpdates {
+  private _currentSong: Song;
 
   /**
    * Manages the currently playing song of a YTMusicSession instance. Updates to the current song can be subscribed to and can be force-updated if needed.
    * @param {Page} page The Puppeteer page instance of the YTMusicSession.
-   * @param {PlayUpdateSubscriber[]} initialSubscribers A list of subscribers that will be subscribed before any play updates.
+   * @param {(value: Song) => void} setCurrentSong A callback that will be invoked when the current song updates.
    */
-  constructor(private page: Page, initialSubscribers?: PlayUpdateSubscriber[]) {
-    if (initialSubscribers)
-      initialSubscribers.forEach((sub) => this.subscribe(sub));
+  constructor(
+    private page: Page,
+    private setCurrentSong: (value: Song) => void
+  ) {
     this.handlePlayUpdate();
+    this.forceSongUpdate();
   }
 
-  /**
-   * Subscribes to automatic updates of either the current song or current artist.
-   * @param {PlayUpdateSubscriber} callback A callback that will be invoked when the current song or artist changes. The callback may receive one argument - a formatted string indicating the new song and artist.
-   * @returns A subscriber ID that can be used later to unsubscribe.
-   */
-  public subscribe = (callback: PlayUpdateSubscriber) => {
-    const subscriberId = crypto.randomBytes(8).toString('hex');
-    this.subscribers[subscriberId] = callback;
-    return subscriberId;
-  };
+  public get currentSong(): Song {
+    return this._currentSong;
+  }
 
-  /**
-   * Removes a callback that has been subscribed to song/artist updates.
-   * @param {string} subscriberId The subscriber ID that was received upon subscribing.
-   */
-  public unsubscribe = (subscriberId: string) => {
-    delete this.subscribers[subscriberId];
-  };
+  private set currentSong(value: Song) {
+    this._currentSong = value;
+    this.setCurrentSong(value);
+  }
 
   /**
    * Forces an update to the current song. This is useful when the page first loads as the subscribers will automatically receive updates when the DOM changes but not when it is first initialized.
@@ -54,9 +35,10 @@ export class YTPlayUpdates implements PlayUpdates {
       this.page.waitForSelector(
         `ytmusic-player-bar span.subtitle yt-formatted-string a`
       ),
+      this.page.waitForSelector(`video`),
     ]);
 
-    const [currentSong, currentArtist] = await Promise.all([
+    const [currentSong, currentArtist, currentDuration] = await Promise.all([
       this.page.$eval(
         `ytmusic-player-bar yt-formatted-string`,
         (element: HTMLElement) => element.innerText
@@ -65,25 +47,25 @@ export class YTPlayUpdates implements PlayUpdates {
         `ytmusic-player-bar span.subtitle yt-formatted-string a`,
         (element: HTMLElement) => element.innerText
       ),
+      this.page.$eval(`video`, (element: HTMLVideoElement) => element.duration),
     ]);
 
-    this.currentSong = currentSong;
-    this.currentArtist = currentArtist;
-
-    Object.values(this.subscribers).forEach((subscriber) =>
-      subscriber(this.nowPlaying)
-    );
+    this.currentSong = {
+      song: currentSong,
+      artist: currentArtist,
+      duration: currentDuration,
+    };
   }
 
   private async handlePlayUpdate() {
     await this.page.exposeFunction(
       'handlePlayUpdate',
-      (newSongInfo: string, newArtistInfo: string) => {
-        this.currentSong = newSongInfo;
-        this.currentArtist = newArtistInfo;
-        Object.values(this.subscribers).forEach((subscriber) =>
-          subscriber(this.nowPlaying)
-        );
+      (newSong: string, newArtist: string, newDuration: number) => {
+        this.currentSong = {
+          song: newSong,
+          artist: newArtist,
+          duration: newDuration,
+        };
       }
     );
     await Promise.all([
@@ -91,6 +73,7 @@ export class YTPlayUpdates implements PlayUpdates {
       this.page.waitForSelector(
         `ytmusic-player-bar span.subtitle yt-formatted-string a`
       ),
+      this.page.waitForSelector(`video`),
     ]);
 
     await this.page.evaluate(() => {
@@ -101,18 +84,19 @@ export class YTPlayUpdates implements PlayUpdates {
         const newArtistElement: HTMLElement = document.querySelector(
           `ytmusic-player-bar span.subtitle yt-formatted-string a`
         );
+        const videoElement: HTMLVideoElement = document.querySelector(`video`);
 
         //@ts-ignore
-        handlePlayUpdate(newSongElement.innerText, newArtistElement.innerText);
+        handlePlayUpdate(
+          newSongElement.innerText,
+          newArtistElement.innerText,
+          videoElement.duration
+        );
       });
-      observer.observe(
-        document.querySelector(`ytmusic-player-bar yt-formatted-string`),
-        {
-          attributes: false,
-          childList: true,
-          subtree: true,
-        }
-      );
+      observer.observe(document.querySelector(`video`), {
+        attributes: true,
+        attributeFilter: ['src'],
+      });
     });
   }
 }

@@ -35,7 +35,7 @@ export class YTMusicSession extends BrowserSession {
     previous: () => void;
   };
 
-  public PlayUpdates: YTPlayUpdates;
+  private playUpdates: YTPlayUpdates;
   public ProgressUpdates: YTProgressUpdates;
   public SearchHandler: YTSearchHandler;
   public PlaybackControls: YTMusicPlaybackControls;
@@ -64,6 +64,10 @@ export class YTMusicSession extends BrowserSession {
     );
 
     await this.initialSearch(sessionOptions.args);
+    this.playUpdates = new YTPlayUpdates(
+      this.page,
+      (value) => (this.currentSong = value)
+    );
   }
 
   /**
@@ -99,7 +103,7 @@ export class YTMusicSession extends BrowserSession {
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
 
-    await this.PlayUpdates.forceSongUpdate();
+    await this.playUpdates.forceSongUpdate();
   }
 
   /**
