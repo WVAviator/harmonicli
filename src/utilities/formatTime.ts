@@ -5,6 +5,7 @@
  */
 export const getFormattedTimeString = (time: number | string) => {
   if (typeof time === 'string') return time;
+  if (time === NaN) return '0:00';
 
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);

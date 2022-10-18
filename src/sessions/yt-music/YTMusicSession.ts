@@ -19,13 +19,6 @@ const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
  * @param page An initialized Puppeteer page used to navigate Youtube music.
  */
 export class YTMusicSession extends BrowserSession {
-  public async search(query: string): Promise<void> {
-    await this.searchHandler.search(query);
-  }
-  public async select(playID: string): Promise<void> {
-    await this.searchHandler.play(playID);
-  }
-
   private playUpdates: YTPlayUpdates;
   private progressUpdates: YTProgressUpdates;
   private searchHandler: YTSearchHandler;
@@ -125,6 +118,14 @@ export class YTMusicSession extends BrowserSession {
     next: () => this.playbackControls.next(),
     previous: () => this.playbackControls.previous(),
   };
+
+  public async search(query: string): Promise<void> {
+    await this.searchHandler.search(query);
+  }
+  public async select(playID: string): Promise<void> {
+    await this.searchHandler.play(playID);
+    await this.playUpdates.forceSongUpdate();
+  }
 
   /**
    * Closes the browser and ends the session.
