@@ -30,7 +30,7 @@ const ConfigUtils = {
 
   /**
    * Saves the config to file.
-   * Path is '$HOME/.pcli/config.json'
+   * Path is '$HOME/.mcli/config.json'
    * 
    * @param key Config item.
    * @param value Value item.
