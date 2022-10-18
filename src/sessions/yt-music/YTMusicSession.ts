@@ -1,4 +1,4 @@
-import { BrowserSession, Song } from '../base/BrowserSession';
+import { BrowserSession } from '../base/BrowserSession';
 import { Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
@@ -25,16 +25,11 @@ export class YTMusicSession extends BrowserSession {
   public async select(playID: string): Promise<void> {
     await this.searchHandler.play(playID);
   }
-  public controls: {
-    playPause: () => void;
-    next: () => void;
-    previous: () => void;
-  };
 
   private playUpdates: YTPlayUpdates;
   private progressUpdates: YTProgressUpdates;
   private searchHandler: YTSearchHandler;
-  public PlaybackControls: YTMusicPlaybackControls;
+  private playbackControls: YTMusicPlaybackControls;
   private volumeControl: YTMusicVolumeControl;
 
   private page: Page;
@@ -74,6 +69,7 @@ export class YTMusicSession extends BrowserSession {
       (value) => (this.currentTime = value)
     );
     this.volumeControl = new YTMusicVolumeControl(this.page);
+    this.playbackControls = new YTMusicPlaybackControls(this.page);
   }
 
   /**
@@ -119,6 +115,12 @@ export class YTMusicSession extends BrowserSession {
   public set volume(value: number) {
     this.volumeControl.setVolume(value);
   }
+
+  public controls = {
+    playPause: () => this.playbackControls.playPause(),
+    next: () => this.playbackControls.next(),
+    previous: () => this.playbackControls.previous(),
+  };
 
   /**
    * Closes the browser and ends the session.
