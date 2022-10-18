@@ -14,7 +14,7 @@ export abstract class BrowserSession {
   protected constructor() {}
 
   /**
-   * Executing a search should populat the searchResults property with new values.
+   * Executing a search should populate the searchResults property with new values.
    * @param query
    */
   public abstract search(query: string): Promise<void>;
@@ -123,11 +123,6 @@ export abstract class BrowserSession {
       this._listeners[property].forEach((callback) => callback(value));
     }
   }
-}
-
-export interface Progress {
-  currentTime: number;
-  currentDuration: number;
 }
 
 export interface Song {

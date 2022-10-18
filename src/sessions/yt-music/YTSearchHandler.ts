@@ -180,6 +180,5 @@ export class YTSearchHandler {
     });
 
     this.searchResults = songs;
-    console.log(songs);
   }
 }
