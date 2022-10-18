@@ -1,8 +1,4 @@
-import { BrowserSession } from '../base/BrowserSession';
-import {
-  mergeDefaultYTSearchOptions,
-  YTSearchOptions,
-} from './YTMusicSearchOptions';
+import { BrowserSession, Song } from '../base/BrowserSession';
 import { Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
@@ -23,11 +19,11 @@ const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
  * @param page An initialized Puppeteer page used to navigate Youtube music.
  */
 export class YTMusicSession extends BrowserSession {
-  public search(query: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  public async search(query: string): Promise<void> {
+    await this.searchHandler.search(query);
   }
-  public select(playID: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  public async select(playID: string): Promise<void> {
+    await this.searchHandler.play(playID);
   }
   public controls: {
     playPause: () => void;
@@ -37,7 +33,7 @@ export class YTMusicSession extends BrowserSession {
 
   private playUpdates: YTPlayUpdates;
   public ProgressUpdates: YTProgressUpdates;
-  public SearchHandler: YTSearchHandler;
+  private searchHandler: YTSearchHandler;
   public PlaybackControls: YTMusicPlaybackControls;
   public VolumeControl: YTMusicVolumeControl;
 
@@ -64,9 +60,14 @@ export class YTMusicSession extends BrowserSession {
     );
 
     await this.initialSearch(sessionOptions.args);
+
     this.playUpdates = new YTPlayUpdates(
       this.page,
       (value) => (this.currentSong = value)
+    );
+    this.searchHandler = new YTSearchHandler(
+      this.page,
+      (value) => (this.searchResults = value)
     );
   }
 

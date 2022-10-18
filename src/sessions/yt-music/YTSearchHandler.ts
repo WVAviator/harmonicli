@@ -1,43 +1,25 @@
 import { Page } from 'puppeteer';
-import {
-  SearchHandler,
-  SearchListSubscriber,
-  Song,
-} from '../base/SearchHandler';
-import crypto from 'crypto';
+import { Song } from '../base/BrowserSession';
 
-export class YTSearchHandler implements SearchHandler {
-  private page: Page;
-  public songList: Song[];
-  private subscribers: Record<string, SearchListSubscriber>;
+export class YTSearchHandler {
+  private _searchResults: Song[];
 
   /**
    * A helper class for managing the search functionality of a YTMusicSession.
    * @param page The Puppeteer page of the YTMusicSession.
    */
-  constructor(page: Page) {
-    this.page = page;
-    this.songList = [];
-    this.subscribers = {};
+  constructor(
+    private page: Page,
+    private setSearchResults: (value: Song[]) => void
+  ) {}
+
+  public get searchResults() {
+    return this._searchResults;
   }
 
-  /**
-   * Subscribe to updates to the search list.
-   * @param callback A callback to be invoked when the search list changes.
-   * @returns A unique id that can be used later to unsubscribe.
-   */
-  public subscribe(callback: SearchListSubscriber) {
-    const subscriberId = crypto.randomBytes(8).toString('hex');
-    this.subscribers[subscriberId] = callback;
-    return subscriberId;
-  }
-
-  /**
-   * Unsubscribe from search list updates.
-   * @param subscriberID The ID returned from the original call to subscribe.
-   */
-  public unsubscribe(subscriberID: string) {
-    delete this.subscribers[subscriberID];
+  private set searchResults(value: Song[]) {
+    this._searchResults = value;
+    this.setSearchResults(value);
   }
 
   /**
@@ -65,10 +47,7 @@ export class YTSearchHandler implements SearchHandler {
       if (currentQuery == query) return;
 
       // Reset songList.
-      this.songList = [];
-      Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
-        cb(this.songList)
-      );
+      this.searchResults = [];
 
       // Click search bar (bring it to focus for next steps)
       await Promise.all([
@@ -106,10 +85,15 @@ export class YTSearchHandler implements SearchHandler {
     }
 
     // Click song filter
-    await this.page.click('a[title="Show song results"]').catch(_ => error = true);
+    await this.page
+      .click('a[title="Show song results"]')
+      .catch((_) => (error = true));
 
     // Wait for the song element selector if it exists.
-    if (!error) await this.page.waitForSelector('tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer');
+    if (!error)
+      await this.page.waitForSelector(
+        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
+      );
 
     // Check for songs.
     await this.page.$$eval(
@@ -133,21 +117,9 @@ export class YTSearchHandler implements SearchHandler {
 
     // If there are errors, show no results found.
     if (error) {
-      this.songList = [
-        {
-          title: 'No results found.',
-          artist: 'No results found.',
-          duration: 'No results found.',
-          playID: 'No results found.',
-        },
-      ];
-
-      Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
-        cb(this.songList)
-      );
-      
+      this.searchResults = [];
       return;
-    };
+    }
 
     // Update the songlist on idle.
     await this.page.waitForNetworkIdle();
@@ -207,9 +179,6 @@ export class YTSearchHandler implements SearchHandler {
       );
     });
 
-    // Update the songlist for each hook.
-    Object.values(this.subscribers).forEach((cb: SearchListSubscriber) =>
-      cb(songs)
-    );
+    this.searchResults = songs;
   }
 }
