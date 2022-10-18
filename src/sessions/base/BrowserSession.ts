@@ -35,11 +35,20 @@ export abstract class BrowserSession {
 
   private _listeners: Partial<Record<keyof this, Set<SessionListener>>> = {};
 
-  private constructor() {}
+  protected constructor() {}
 
-  static async create<B extends BrowserSession>(options: SessionOptions) {
-    return Promise<B>;
+  public static async create<B extends BrowserSession>(
+    this: { new (): B },
+    options?: Partial<SessionOptions>
+  ): Promise<B> {
+    const newSession = new this();
+    await newSession.initialize(options);
+    return newSession;
   }
+
+  protected abstract initialize(
+    options?: Partial<SessionOptions>
+  ): Promise<void>;
 
   public abstract search(query: string): Promise<void>;
   public abstract select(playID: string): Promise<void>;
