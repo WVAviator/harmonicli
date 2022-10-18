@@ -19,18 +19,18 @@ const VolumeControl: React.FC = () => {
 
   const increaseVolume = () => {
     if (volume === MAX_VOLUME) return;
-    session.VolumeControl.setVolume((volume + 1) / MAX_VOLUME);
+    session.volume = (volume + 1) / MAX_VOLUME;
     setVolume((currentVolume) => currentVolume + 1);
   };
 
   const decreaseVolume = () => {
     if (volume === 0) return;
-    session.VolumeControl.setVolume((volume - 1) / MAX_VOLUME);
+    session.volume = (volume - 1) / MAX_VOLUME;
     setVolume((currentVolume) => currentVolume - 1);
   };
 
   useEffect(() => {
-    setVolume(session.VolumeControl.currentVolume * MAX_VOLUME);
+    setVolume(session.volume * MAX_VOLUME);
   }, []);
 
   useInput((_, key) => {
@@ -39,7 +39,7 @@ const VolumeControl: React.FC = () => {
     if (key.return) {
       if (isSelected) {
         setIsSelected(false);
-        session.VolumeControl.setVolume(volume / MAX_VOLUME);
+        session.volume = volume / MAX_VOLUME;
       } else {
         setIsSelected(true);
       }
@@ -55,13 +55,13 @@ const VolumeControl: React.FC = () => {
 
     if (key.upArrow) {
       setIsSelected(false);
-      session.VolumeControl.setVolume(volume / MAX_VOLUME);
+      session.volume = volume / MAX_VOLUME;
       focusPrevious();
     }
 
     if (key.downArrow) {
       setIsSelected(false);
-      session.VolumeControl.setVolume(volume / MAX_VOLUME);
+      session.volume = volume / MAX_VOLUME;
       focusNext();
     }
   });

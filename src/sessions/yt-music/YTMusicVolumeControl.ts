@@ -1,7 +1,5 @@
 import { Page } from 'puppeteer';
-import { VolumeControl } from '../base/VolumeControl';
-
-export class YTMusicVolumeControl implements VolumeControl {
+export class YTMusicVolumeControl {
   private volume = 1;
 
   constructor(private page: Page) {
@@ -28,14 +26,12 @@ export class YTMusicVolumeControl implements VolumeControl {
    */
   public async setVolume(volume: number) {
     if (volume < 0 || volume > 1) return;
-    await this.page.evaluate(
-      (volume: number) => {
-        const volumeSlider: HTMLInputElement = document.querySelector('#volume-slider');
-        volumeSlider.value = Math.floor(volume * 100).toString();
-        volumeSlider.dispatchEvent(new Event('change'));
-      },
-      volume
-    );
+    await this.page.evaluate((volume: number) => {
+      const volumeSlider: HTMLInputElement =
+        document.querySelector('#volume-slider');
+      volumeSlider.value = Math.floor(volume * 100).toString();
+      volumeSlider.dispatchEvent(new Event('change'));
+    }, volume);
     this.volume = volume;
   }
 }

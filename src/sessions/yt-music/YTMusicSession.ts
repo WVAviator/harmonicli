@@ -35,7 +35,7 @@ export class YTMusicSession extends BrowserSession {
   private progressUpdates: YTProgressUpdates;
   private searchHandler: YTSearchHandler;
   public PlaybackControls: YTMusicPlaybackControls;
-  public VolumeControl: YTMusicVolumeControl;
+  private volumeControl: YTMusicVolumeControl;
 
   private page: Page;
 
@@ -73,6 +73,7 @@ export class YTMusicSession extends BrowserSession {
       this.page,
       (value) => (this.currentTime = value)
     );
+    this.volumeControl = new YTMusicVolumeControl(this.page);
   }
 
   /**
@@ -109,6 +110,14 @@ export class YTMusicSession extends BrowserSession {
     ]);
 
     await this.playUpdates.forceSongUpdate();
+  }
+
+  public get volume() {
+    return this.volumeControl.currentVolume;
+  }
+
+  public set volume(value: number) {
+    this.volumeControl.setVolume(value);
   }
 
   /**
