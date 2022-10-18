@@ -4,10 +4,10 @@ const CONFIG_DIR: string = `${process.env.HOME}/.mcli`
 const CONFIG_PATH: string = `${CONFIG_DIR}/config.json`;
 
 type ColorOptions = {
-    textColor: string,
-    focusColor: string,
-    unfocusedColor: string,
-    gradient: string,
+  textColor: string,
+  focusColor: string,
+  unfocusedColor: string,
+  gradient: string,
 }
 
 export interface Config {
@@ -25,7 +25,7 @@ const defaultConfig: Config = {
   'defaultPlayer': 'YTMusic',
 }
 
-
+// Will refactor later using getter/setter.
 const ConfigUtils = {
 
   /**
