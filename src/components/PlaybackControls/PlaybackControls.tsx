@@ -1,5 +1,5 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 
 /**
@@ -9,7 +9,13 @@ import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionP
  */
 const PlaybackControls: React.FC = () => {
   const session = useContext(BrowserSessionContext);
-  const controls = session.PlaybackControls.controlActions;
+  const controls = useMemo(() => {
+    return [
+      { label: '⏮', value: () => session.controls.previous() },
+      { label: '⏯', value: () => session.controls.playPause() },
+      { label: '⏭', value: () => session.controls.next() },
+    ];
+  }, [session]);
 
   const [selectedControlIndex, setSelectedControlIndex] = useState(1);
 

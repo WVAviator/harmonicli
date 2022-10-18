@@ -3,14 +3,15 @@ import { BrowserSessionContext } from '../components/BrowserSessionProvider/Brow
 
 const useSongList = () => {
   const session = useContext(BrowserSessionContext);
-  const [songList, setSongList] = useState(session.SearchHandler.songList);
+  const [songList, setSongList] = useState(session.searchResults);
 
   useEffect(() => {
-    const subscriberId = session.SearchHandler.subscribe((songList) => {
+    const handleSearchResultsUpdate = (songList) => {
       setSongList(songList);
-    });
+    };
+    session.addListener('searchResults', handleSearchResultsUpdate);
     return () => {
-      session.SearchHandler.unsubscribe(subscriberId);
+      session.removeListener('searchResults', handleSearchResultsUpdate);
     };
   }, [session]);
 

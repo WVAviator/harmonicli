@@ -1,8 +1,4 @@
 import { BrowserSession } from '../base/BrowserSession';
-import {
-  mergeDefaultYTSearchOptions,
-  YTSearchOptions,
-} from './YTMusicSearchOptions';
 import { Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
@@ -18,35 +14,41 @@ import { YTMusicVolumeControl } from './YTMusicVolumeControl';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
-export class YTMusicSession implements BrowserSession {
-  public PlayUpdates: YTPlayUpdates;
-  public ProgressUpdates: YTProgressUpdates;
-  public SearchHandler: YTSearchHandler;
-  public PlaybackControls: YTMusicPlaybackControls;
-  public VolumeControl: YTMusicVolumeControl;
+/**
+ * A YTMusicSession instance manages all headless browsing of the Youtube Music website. A YTMusicSession must be instantiated asynchronously via the 'create' function.
+ * @param page An initialized Puppeteer page used to navigate Youtube music.
+ */
+export class YTMusicSession extends BrowserSession {
+  private playUpdates: YTPlayUpdates;
+  private progressUpdates: YTProgressUpdates;
+  private searchHandler: YTSearchHandler;
+  private playbackControls: YTMusicPlaybackControls;
+  private volumeControl: YTMusicVolumeControl;
 
-  /**
-   * A YTMusicSession instance manages all headless browsing of the Youtube Music website. A YTMusicSession must be instantiated asynchronously via the 'create' function.
-   * @param page An initialized Puppeteer page used to navigate Youtube music.
-   */
-  private constructor(private page: Page) {
-    this.PlayUpdates = new YTPlayUpdates(page);
-    this.ProgressUpdates = new YTProgressUpdates(page);
-    this.SearchHandler = new YTSearchHandler(page);
-    this.PlaybackControls = new YTMusicPlaybackControls(page);
-    this.VolumeControl = new YTMusicVolumeControl(page);
+  protected constructor(private page: Page) {
+    super();
+    this.playUpdates = new YTPlayUpdates(
+      this.page,
+      (value) => (this.currentSong = value)
+    );
+    this.searchHandler = new YTSearchHandler(
+      this.page,
+      (value) => (this.searchResults = value)
+    );
+    this.progressUpdates = new YTProgressUpdates(
+      this.page,
+      (value) => (this.currentTime = value)
+    );
+    this.volumeControl = new YTMusicVolumeControl(this.page);
+    this.playbackControls = new YTMusicPlaybackControls(this.page);
   }
 
   /**
    * Asynchronously creates an instance of a YTMusicSession. A YTMusicSession instance manages all headless browsing of the Youtube Music website.
-   * @param args Any search query arguments entered by the user. These will automatically initiate a search.
-   * @param sessionOptions Any additional options for the session.
+   * @param sessionOptions Options for the session, to include any search arguments.
    * @returns An instance of a YTMusicSession.
    */
-  static async create(
-    args?: string[],
-    sessionOptions?: Partial<SessionOptions>
-  ) {
+  public static async create(sessionOptions?: Partial<SessionOptions>) {
     sessionOptions = mergeDefaultSessionOptions(sessionOptions);
 
     puppeteer.use(Adblocker({ blockTrackers: true }));
@@ -61,9 +63,8 @@ export class YTMusicSession implements BrowserSession {
     );
 
     const session = new YTMusicSession(page);
-    if (args) {
-      await session.search(args);
-    }
+
+    await session.initialSearch(sessionOptions.args);
     return session;
   }
 
@@ -72,26 +73,22 @@ export class YTMusicSession implements BrowserSession {
    * @param args A list of strings that will be concatenated with a '+' in the search URL
    * @param ytSearchOptions Additional options for the search.
    */
-  public async search(
-    args: string[],
-    ytSearchOptions?: Partial<YTSearchOptions>
-  ) {
-    ytSearchOptions = mergeDefaultYTSearchOptions(ytSearchOptions);
-
-    let url = `${YOUTUBE_MUSIC_URL}search?q=${args.join('+')}`;
+  private async initialSearch(args: string[]) {
+    let url = YOUTUBE_MUSIC_URL;
+    if (args.length) url += `search?q=${args.join('+')}`;
     await this.page.goto(url, {
       waitUntil: 'networkidle2',
     });
 
     // Make sure we get only songs.
-    await this.page.click('a[title="Show song results"]').catch(_ => {
-        /**
-         * The below should only run if there are no results.
-         * If there are any issues we'll have to switch to the try/catch method to be more explicit.
-         */
-        console.log('No results found.');
-        process.exit(0);
-      });
+    await this.page.click('a[title="Show song results"]').catch((_) => {
+      /**
+       * The below should only run if there are no results.
+       * If there are any issues we'll have to switch to the try/catch method to be more explicit.
+       */
+      console.log('No results found.');
+      process.exit(0);
+    });
 
     const searchResultsSelector =
       'ytmusic-shelf-renderer:first-of-type div#contents ytmusic-responsive-list-item-renderer #play-button';
@@ -99,14 +96,49 @@ export class YTMusicSession implements BrowserSession {
     //Wait for search results to load
     await this.page.waitForSelector(searchResultsSelector);
 
-    if (!ytSearchOptions.activateFirstResult) return;
-
     await Promise.all([
       this.page.click(searchResultsSelector),
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
 
-    await this.PlayUpdates.forceSongUpdate();
+    await this.playUpdates.forceSongUpdate();
+  }
+
+  /**
+   * Get or set the current music volume.
+   */
+  public get volume() {
+    return this.volumeControl.currentVolume;
+  }
+
+  public set volume(value: number) {
+    this.volumeControl.setVolume(value);
+  }
+
+  /**
+   * Provides playback control to pause, play, or change the current song. Options are 'playPause', 'next', and 'previous'.
+   */
+  public controls = {
+    playPause: () => this.playbackControls.playPause(),
+    next: () => this.playbackControls.next(),
+    previous: () => this.playbackControls.previous(),
+  };
+
+  /**
+   * Execute a search for a specified query. The searchResults property will be populated once the search is completed.
+   * @param query
+   */
+  public async search(query: string): Promise<void> {
+    await this.searchHandler.search(query);
+  }
+
+  /**
+   * Select a song by its playID from a the list of searchResults, and play it.
+   * @param playID
+   */
+  public async select(playID: string): Promise<void> {
+    await this.searchHandler.play(playID);
+    await this.playUpdates.forceSongUpdate();
   }
 
   /**

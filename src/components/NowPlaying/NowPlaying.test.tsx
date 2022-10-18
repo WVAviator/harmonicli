@@ -6,7 +6,12 @@ import BrowserSessionProvider from '../BrowserSessionProvider/BrowserSessionProv
 import NowPlaying from './NowPlaying';
 
 describe('NowPlaying', () => {
-  const mockSession = new MockBrowserSession();
+  const mockSession = MockBrowserSession.create();
+  mockSession.updateCurrentSong({
+    song: 'ABC',
+    artist: 'DEF',
+    duration: 120,
+  });
 
   it('should render without errors', () => {
     expect(() => {
@@ -20,8 +25,12 @@ describe('NowPlaying', () => {
   });
 
   it('should display the currently playing song by default', () => {
-    const mockSession = new MockBrowserSession();
-    mockSession.PlayUpdates.nowPlaying = 'Test';
+    const mockSession = MockBrowserSession.create();
+    mockSession.updateCurrentSong({
+      song: 'ABC',
+      artist: 'DEF',
+      duration: 120,
+    });
 
     const { unmount, frames } = render(
       <BrowserSessionProvider value={mockSession}>
@@ -29,13 +38,18 @@ describe('NowPlaying', () => {
       </BrowserSessionProvider>
     );
 
-    expect(removeANSI(frames[0]).includes('Test')).toBe(true);
+    expect(removeANSI(frames[0])).toContain('ABC | DEF');
     unmount();
   });
 
   it('should rerender when the song updates', async () => {
-    const mockSession = new MockBrowserSession();
-    mockSession.PlayUpdates.nowPlaying = 'ABC';
+    const mockSession = MockBrowserSession.create();
+
+    mockSession.updateCurrentSong({
+      song: 'ABC',
+      artist: 'DEF',
+      duration: 120,
+    });
 
     const { unmount, frames } = render(
       <BrowserSessionProvider value={mockSession}>
@@ -43,13 +57,17 @@ describe('NowPlaying', () => {
       </BrowserSessionProvider>
     );
 
-    expect(removeANSI(frames[0]).includes('ABC')).toBe(true);
+    expect(removeANSI(frames[0])).toContain('ABC | DEF');
 
     await new Promise((res) => setTimeout(res, 100));
 
-    mockSession.PlayUpdates.nowPlaying = 'DEF';
+    mockSession.updateCurrentSong({
+      song: 'HJK',
+      artist: 'LMN',
+      duration: 120,
+    });
 
-    expect(removeANSI(frames[1]).includes('DEF')).toBe(true);
+    expect(removeANSI(frames[1])).toContain('HJK | LMN');
 
     unmount();
   });

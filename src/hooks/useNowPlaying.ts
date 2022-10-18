@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { BrowserSessionContext } from '../components/BrowserSessionProvider/BrowserSessionProvider';
+import { Song } from '../sessions/base/BrowserSession';
 
 /**
  * Get the name of the song and artist that are playing in the current browser session context.
@@ -7,14 +8,15 @@ import { BrowserSessionContext } from '../components/BrowserSessionProvider/Brow
  */
 const useNowPlaying = () => {
   const session = useContext(BrowserSessionContext);
-  const [nowPlaying, setNowPlaying] = useState(session.PlayUpdates.nowPlaying);
+  const [nowPlaying, setNowPlaying] = useState<Song>(session.currentSong);
 
   useEffect(() => {
-    const subscriberId = session.PlayUpdates.subscribe((nowPlaying) => {
-      setNowPlaying(nowPlaying);
-    });
+    const handleSongUpdate = (value: Song) => {
+      setNowPlaying(value);
+    };
+    session.addListener('currentSong', handleSongUpdate);
     return () => {
-      session.PlayUpdates.unsubscribe(subscriberId);
+      session.removeListener('currentSong', handleSongUpdate);
     };
   }, [session]);
 

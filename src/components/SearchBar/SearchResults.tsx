@@ -5,6 +5,7 @@ import SelectInput from 'ink-select-input/build';
 import { Text, useFocusManager, useInput } from 'ink';
 import Gradient from 'ink-gradient';
 import Spinner from 'ink-spinner';
+import { getFormattedTimeString } from '../../utilities/formatTime';
 
 type SRState = {
   searchResultActive: boolean;
@@ -39,12 +40,12 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
   const handleSelect = (selection) => {
     state.setSearchResultActive(false);
     focus('playback-controls');
-    session.SearchHandler.play(selection.value);
+    session.select(selection.value);
   };
 
   const parsedSongSelections = songList?.map((song) => {
     return {
-      label: `${song.title} | ${song.artist} | ${song.duration}`,
+      label: `${song.song} | ${song.artist} | ${song.duration}`,
       value: song.playID,
     };
   });

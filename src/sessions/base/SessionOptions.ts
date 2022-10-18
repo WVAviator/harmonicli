@@ -1,6 +1,8 @@
-import { OptionValues } from 'commander';
-
-export interface SessionOptions extends OptionValues {
+export interface SessionOptions {
+  /**
+   * A list of string arguments passed in by the user
+   */
+  args: string[];
   /**
    * When set to true, the Chromium browser instance running Youtube Music will be headless (not rendered). Default is true.
    */
@@ -8,6 +10,7 @@ export interface SessionOptions extends OptionValues {
 }
 
 export const defaultSessionOptions: SessionOptions = {
+  args: [],
   headless: true,
 };
 

@@ -18,8 +18,7 @@ program
   .parse(process.argv);
 
 const options = program.opts();
-const headless = true && options.headless;
 
-render(<App args={program.args} options={{ headless }} />);
+render(<App options={{ args: program.args, headless: !!options.headless }} />);
 
 // render(<App session={}/>);

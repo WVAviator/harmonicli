@@ -12,17 +12,16 @@ import { SearchBar } from './components/SearchBar/SearchBar';
 import VolumeControl from './components/VolumeControl/VolumeControl';
 
 interface AppProps {
-  args?: string[];
   options?: Partial<SessionOptions>;
 }
 
-export const App: React.FC<AppProps> = ({ args = [], options = {} }) => {
+export const App: React.FC<AppProps> = ({ options = {} }) => {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
     const establishSession = async () => {
       //TODO: Un-hardcode YTMusicSession here so that SpotifySessions can be instantated as well.
-      const newSession = await YTMusicSession.create(args, options);
+      const newSession = await YTMusicSession.create(options);
       setSession(newSession);
     };
 
