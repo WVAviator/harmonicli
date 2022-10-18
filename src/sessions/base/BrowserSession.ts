@@ -37,19 +37,6 @@ export abstract class BrowserSession {
 
   protected constructor() {}
 
-  public static async create<B extends BrowserSession>(
-    this: { new (): B },
-    options?: Partial<SessionOptions>
-  ): Promise<B> {
-    const newSession = new this();
-    await newSession.initialize(options);
-    return newSession;
-  }
-
-  protected abstract initialize(
-    options?: Partial<SessionOptions>
-  ): Promise<void>;
-
   public abstract search(query: string): Promise<void>;
   public abstract select(playID: string): Promise<void>;
 
@@ -133,6 +120,6 @@ export interface Progress {
 export interface Song {
   song: string;
   artist: string;
-  duration: number;
+  duration: number | string;
   playID?: string;
 }

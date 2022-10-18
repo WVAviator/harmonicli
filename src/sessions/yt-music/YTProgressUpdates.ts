@@ -60,7 +60,7 @@ export class YTProgressUpdates {
         const videoElement: HTMLVideoElement = document.querySelector(`video`);
 
         //@ts-ignore
-        handleProgressUpdate(videoElement.currentTime);
+        handleTimeUpdate(videoElement.currentTime);
       });
 
       observer.observe(document.querySelector('#progress-bar'), {

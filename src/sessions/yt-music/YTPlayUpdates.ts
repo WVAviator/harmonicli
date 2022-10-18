@@ -77,7 +77,8 @@ export class YTPlayUpdates {
     ]);
 
     await this.page.evaluate(() => {
-      const observer = new MutationObserver(() => {
+      const videoElement = document.querySelector('video');
+      videoElement.addEventListener('canplay', () => {
         const newSongElement: HTMLElement = document.querySelector(
           `ytmusic-player-bar yt-formatted-string`
         );
@@ -92,10 +93,6 @@ export class YTPlayUpdates {
           newArtistElement.innerText,
           videoElement.duration
         );
-      });
-      observer.observe(document.querySelector(`video`), {
-        attributes: true,
-        attributeFilter: ['src'],
       });
     });
   }

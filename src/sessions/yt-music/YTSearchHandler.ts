@@ -147,7 +147,7 @@ export class YTSearchHandler {
     const songs: Song[] = await this.page.evaluate(() => {
       // Only the first 11 songs will have a play button attached.
       const getSongInfo = (elements) => {
-        const info = [];
+        const info: Song[] = [];
         elements.forEach(
           (element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
             // There will be a better limit soon™️.
@@ -162,7 +162,7 @@ export class YTSearchHandler {
               );
             }
             info.push({
-              title: element.querySelectorAll('a')[0].innerText,
+              song: element.querySelectorAll('a')[0].innerText,
               artist: element.querySelectorAll('a')[1].innerText,
               duration: element.querySelectorAll('span')[2].innerText,
               playID: playButton ? playID : null,
@@ -180,5 +180,6 @@ export class YTSearchHandler {
     });
 
     this.searchResults = songs;
+    console.log(songs);
   }
 }

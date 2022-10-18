@@ -27,7 +27,7 @@ export const SearchBar = () => {
   const handleSearchSubmit = function (query: string) {
     focus('search-selector');
     setSearchResultActive(true);
-    session.SearchHandler.search(query);
+    session.search(query);
   };
 
   const view = () => {

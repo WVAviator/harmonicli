@@ -32,30 +32,8 @@ export class YTMusicSession extends BrowserSession {
   private playbackControls: YTMusicPlaybackControls;
   private volumeControl: YTMusicVolumeControl;
 
-  private page: Page;
-
-  /**
-   * Asynchronously creates an instance of a YTMusicSession. A YTMusicSession instance manages all headless browsing of the Youtube Music website.
-   * @param args Any search query arguments entered by the user. These will automatically initiate a search.
-   * @param sessionOptions Any additional options for the session.
-   * @returns An instance of a YTMusicSession.
-   */
-  protected async initialize(sessionOptions?: Partial<SessionOptions>) {
-    sessionOptions = mergeDefaultSessionOptions(sessionOptions);
-
-    puppeteer.use(Adblocker({ blockTrackers: true }));
-    const browser = await puppeteer.launch({
-      headless: sessionOptions.headless,
-      ignoreDefaultArgs: ['--mute-audio'],
-      args: ['--autoplay-policy=no-user-gesture-required'],
-    });
-    this.page = await browser.newPage();
-    await this.page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
-    );
-
-    await this.initialSearch(sessionOptions.args);
-
+  protected constructor(private page: Page) {
+    super();
     this.playUpdates = new YTPlayUpdates(
       this.page,
       (value) => (this.currentSong = value)
@@ -70,6 +48,32 @@ export class YTMusicSession extends BrowserSession {
     );
     this.volumeControl = new YTMusicVolumeControl(this.page);
     this.playbackControls = new YTMusicPlaybackControls(this.page);
+  }
+
+  /**
+   * Asynchronously creates an instance of a YTMusicSession. A YTMusicSession instance manages all headless browsing of the Youtube Music website.
+   * @param args Any search query arguments entered by the user. These will automatically initiate a search.
+   * @param sessionOptions Any additional options for the session.
+   * @returns An instance of a YTMusicSession.
+   */
+  public static async create(sessionOptions?: Partial<SessionOptions>) {
+    sessionOptions = mergeDefaultSessionOptions(sessionOptions);
+
+    puppeteer.use(Adblocker({ blockTrackers: true }));
+    const browser = await puppeteer.launch({
+      headless: sessionOptions.headless,
+      ignoreDefaultArgs: ['--mute-audio'],
+      args: ['--autoplay-policy=no-user-gesture-required'],
+    });
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
+    );
+
+    const session = new YTMusicSession(page);
+
+    await session.initialSearch(sessionOptions.args);
+    return session;
   }
 
   /**
