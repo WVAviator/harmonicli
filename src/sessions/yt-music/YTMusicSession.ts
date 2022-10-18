@@ -32,7 +32,7 @@ export class YTMusicSession extends BrowserSession {
   };
 
   private playUpdates: YTPlayUpdates;
-  public ProgressUpdates: YTProgressUpdates;
+  private progressUpdates: YTProgressUpdates;
   private searchHandler: YTSearchHandler;
   public PlaybackControls: YTMusicPlaybackControls;
   public VolumeControl: YTMusicVolumeControl;
@@ -68,6 +68,10 @@ export class YTMusicSession extends BrowserSession {
     this.searchHandler = new YTSearchHandler(
       this.page,
       (value) => (this.searchResults = value)
+    );
+    this.progressUpdates = new YTProgressUpdates(
+      this.page,
+      (value) => (this.currentTime = value)
     );
   }
 

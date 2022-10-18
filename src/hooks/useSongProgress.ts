@@ -1,3 +1,4 @@
+import { Song } from './../sessions/base/BrowserSession';
 import { useContext, useEffect, useState } from 'react';
 import { BrowserSessionContext } from '../components/BrowserSessionProvider/BrowserSessionProvider';
 
@@ -7,23 +8,26 @@ import { BrowserSessionContext } from '../components/BrowserSessionProvider/Brow
  */
 const useSongProgress = () => {
   const session = useContext(BrowserSessionContext);
-  const [currentProgress, setCurrentProgress] = useState(
-    session.ProgressUpdates.currentProgress
+  const [currentTime, setCurrentTime] = useState(session.currentTime);
+  const [currentDuration, setCurrentDuration] = useState(
+    session.currentSong.duration
   );
 
   useEffect(() => {
-    const subscriberId = session.ProgressUpdates.subscribe(
-      (currentProgress) => {
-        setCurrentProgress(currentProgress);
-      }
-    );
+    const handleTimeUpdate = (value: number) => setCurrentTime(value);
+    const handleDurationUpdate = ({ duration }: Song) =>
+      setCurrentDuration(duration);
+
+    session.addListener('currentTime', handleTimeUpdate);
+    session.addListener('currentSong', handleDurationUpdate);
 
     return () => {
-      session.ProgressUpdates.unsubscribe(subscriberId);
+      session.removeListener('currentTime', handleTimeUpdate);
+      session.removeListener('currentSong', handleDurationUpdate);
     };
   }, [session]);
 
-  return currentProgress;
+  return { currentTime, currentDuration };
 };
 
 export default useSongProgress;
