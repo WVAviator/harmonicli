@@ -1,31 +1,3 @@
-import { SessionOptions } from './SessionOptions';
-
-/**
- * An abstract interface to be implemented by any class that provides a session for the user interface to display and control.
- */
-// export interface BrowserSession {
-//   create: (options: SessionOptions) => BrowserSession;
-//   currentSong: Song | null;
-//   volume: number;
-//   currentTime: number | null;
-//   search: (query: string) => Promise<void>;
-//   select: (playID: string) => Promise<void>;
-//   results: Song[] | null;
-//   controls: {
-//     playPause: () => void;
-//     next: () => void;
-//     previous: () => void;
-//   };
-//   subscribe: <T extends keyof ExcludeMethods<BrowserSession>>(
-//     property: T,
-//     callback: (value: T) => void
-//   ) => void;
-//   unsubscribe: <T extends keyof ExcludeMethods<BrowserSession>>(
-//     property: T,
-//     callback: (value: T) => void
-//   ) => void;
-//   close: () => Promise<void>;
-// }
 export type SessionListener = (newValue: any) => void;
 
 /**
