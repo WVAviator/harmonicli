@@ -18,7 +18,7 @@ import { YTMusicVolumeControl } from './YTMusicVolumeControl';
 
 const YOUTUBE_MUSIC_URL = 'https://music.youtube.com/';
 
-export class YTMusicSession implements BrowserSession {
+export class YTMusicSession extends BrowserSession {
   public PlayUpdates: YTPlayUpdates;
   public ProgressUpdates: YTProgressUpdates;
   public SearchHandler: YTSearchHandler;
@@ -30,6 +30,7 @@ export class YTMusicSession implements BrowserSession {
    * @param page An initialized Puppeteer page used to navigate Youtube music.
    */
   private constructor(private page: Page) {
+    super();
     this.PlayUpdates = new YTPlayUpdates(page);
     this.ProgressUpdates = new YTProgressUpdates(page);
     this.SearchHandler = new YTSearchHandler(page);
@@ -43,10 +44,7 @@ export class YTMusicSession implements BrowserSession {
    * @param sessionOptions Any additional options for the session.
    * @returns An instance of a YTMusicSession.
    */
-  static async create(
-    args?: string[],
-    sessionOptions?: Partial<SessionOptions>
-  ) {
+  static async create(sessionOptions?: Partial<SessionOptions>) {
     sessionOptions = mergeDefaultSessionOptions(sessionOptions);
 
     puppeteer.use(Adblocker({ blockTrackers: true }));
@@ -61,9 +59,8 @@ export class YTMusicSession implements BrowserSession {
     );
 
     const session = new YTMusicSession(page);
-    if (args) {
-      await session.search(args);
-    }
+    await session.initialSearch(sessionOptions.args);
+
     return session;
   }
 
@@ -72,34 +69,28 @@ export class YTMusicSession implements BrowserSession {
    * @param args A list of strings that will be concatenated with a '+' in the search URL
    * @param ytSearchOptions Additional options for the search.
    */
-  public async search(
-    args: string[],
-    ytSearchOptions?: Partial<YTSearchOptions>
-  ) {
-    ytSearchOptions = mergeDefaultYTSearchOptions(ytSearchOptions);
-
-    let url = `${YOUTUBE_MUSIC_URL}search?q=${args.join('+')}`;
+  private async initialSearch(args: string[]) {
+    let url = YOUTUBE_MUSIC_URL;
+    if (args.length) url += `search?q=${args.join('+')}`;
     await this.page.goto(url, {
       waitUntil: 'networkidle2',
     });
 
     // Make sure we get only songs.
-    await this.page.click('a[title="Show song results"]').catch(_ => {
-        /**
-         * The below should only run if there are no results.
-         * If there are any issues we'll have to switch to the try/catch method to be more explicit.
-         */
-        console.log('No results found.');
-        process.exit(0);
-      });
+    await this.page.click('a[title="Show song results"]').catch((_) => {
+      /**
+       * The below should only run if there are no results.
+       * If there are any issues we'll have to switch to the try/catch method to be more explicit.
+       */
+      console.log('No results found.');
+      process.exit(0);
+    });
 
     const searchResultsSelector =
       'ytmusic-shelf-renderer:first-of-type div#contents ytmusic-responsive-list-item-renderer #play-button';
 
     //Wait for search results to load
     await this.page.waitForSelector(searchResultsSelector);
-
-    if (!ytSearchOptions.activateFirstResult) return;
 
     await Promise.all([
       this.page.click(searchResultsSelector),

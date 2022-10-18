@@ -37,7 +37,7 @@ export abstract class BrowserSession {
 
   private constructor() {}
 
-  static create<B extends BrowserSession>(options: SessionOptions) {
+  static async create<B extends BrowserSession>(options: SessionOptions) {
     return Promise<B>;
   }
 
