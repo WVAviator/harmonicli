@@ -3,7 +3,9 @@ import React from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
 import { App } from './App';
+import { logOutput } from './utilities/logging';
 
+logOutput('debug.log');
 const program = new Command();
 
 program
