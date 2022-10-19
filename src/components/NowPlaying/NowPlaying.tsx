@@ -16,7 +16,7 @@ const NowPlaying: React.FC = () => {
     <Box paddingX={1} width="50%" borderStyle="round">
       <Gradient name="summer">
         <MarqueeText maxWidth={columns * 0.5 - 4} bold>
-          {`${song} | ${artist}`}
+          {song || artist ? `${song} | ${artist}` : 'Search for a song below.'}
         </MarqueeText>
       </Gradient>
     </Box>

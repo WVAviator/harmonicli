@@ -151,6 +151,7 @@ export class YTMusicSession extends BrowserSession {
   }
 
   public set volume(value: number) {
+    if (!this.currentSong) return;
     this.volumeControl.setVolume(value);
   }
 
@@ -158,9 +159,18 @@ export class YTMusicSession extends BrowserSession {
    * Provides playback control to pause, play, or change the current song. Options are 'playPause', 'next', and 'previous'.
    */
   public controls = {
-    playPause: () => this.playbackControls.playPause(),
-    next: () => this.playbackControls.next(),
-    previous: () => this.playbackControls.previous(),
+    playPause: () => {
+      if (!this.currentSong) return;
+      this.playbackControls.playPause();
+    },
+    next: () => {
+      if (!this.currentSong) return;
+      this.playbackControls.next();
+    },
+    previous: () => {
+      if (!this.currentSong) return;
+      this.playbackControls.previous();
+    },
   };
 
   /**
@@ -168,6 +178,10 @@ export class YTMusicSession extends BrowserSession {
    * @param query
    */
   public async search(query: string): Promise<void> {
+    if (!this.currentSong) {
+      //TODO: Do something different here because the usual search selector doesn't exist on home page?
+      return;
+    }
     await this.searchHandler.search(query);
   }
 
