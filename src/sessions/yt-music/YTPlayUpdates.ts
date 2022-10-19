@@ -30,70 +30,84 @@ export class YTPlayUpdates {
    * Forces an update to the current song. This is useful when the page first loads as the subscribers will automatically receive updates when the DOM changes but not when it is first initialized.
    */
   public async forceSongUpdate() {
-    await Promise.all([
-      this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),
-      this.page.waitForSelector(
-        `ytmusic-player-bar span.subtitle yt-formatted-string a`
-      ),
-      this.page.waitForSelector(`video`),
-    ]);
+    try {
+      await Promise.all([
+        this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),
+        this.page.waitForSelector(
+          `ytmusic-player-bar span.subtitle yt-formatted-string a`
+        ),
+        this.page.waitForSelector(`video`),
+      ]);
 
-    const [currentSong, currentArtist, currentDuration] = await Promise.all([
-      this.page.$eval(
-        `ytmusic-player-bar yt-formatted-string`,
-        (element: HTMLElement) => element.innerText
-      ),
-      this.page.$eval(
-        `ytmusic-player-bar span.subtitle yt-formatted-string a`,
-        (element: HTMLElement) => element.innerText
-      ),
-      this.page.$eval(`video`, (element: HTMLVideoElement) => element.duration),
-    ]);
+      const [currentSong, currentArtist, currentDuration] = await Promise.all([
+        this.page.$eval(
+          `ytmusic-player-bar yt-formatted-string`,
+          (element: HTMLElement) => element.innerText
+        ),
+        this.page.$eval(
+          `ytmusic-player-bar span.subtitle yt-formatted-string a`,
+          (element: HTMLElement) => element.innerText
+        ),
+        this.page.$eval(
+          `video`,
+          (element: HTMLVideoElement) => element.duration
+        ),
+      ]);
 
-    this.currentSong = {
-      song: currentSong,
-      artist: currentArtist,
-      duration: currentDuration,
-    };
+      this.currentSong = {
+        song: currentSong,
+        artist: currentArtist,
+        duration: currentDuration,
+      };
+    } catch (error) {
+      console.log('Error occurred when force updating the current song.');
+      console.error(error);
+    }
   }
 
   private async handlePlayUpdate() {
-    await this.page.exposeFunction(
-      'handlePlayUpdate',
-      (newSong: string, newArtist: string, newDuration: number) => {
-        this.currentSong = {
-          song: newSong,
-          artist: newArtist,
-          duration: newDuration,
-        };
-      }
-    );
-    await Promise.all([
-      this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),
-      this.page.waitForSelector(
-        `ytmusic-player-bar span.subtitle yt-formatted-string a`
-      ),
-      this.page.waitForSelector(`video`),
-    ]);
-
-    await this.page.evaluate(() => {
-      const videoElement = document.querySelector('video');
-      videoElement.addEventListener('canplay', () => {
-        const newSongElement: HTMLElement = document.querySelector(
-          `ytmusic-player-bar yt-formatted-string`
-        );
-        const newArtistElement: HTMLElement = document.querySelector(
+    try {
+      await this.page.exposeFunction(
+        'handlePlayUpdate',
+        (newSong: string, newArtist: string, newDuration: number) => {
+          this.currentSong = {
+            song: newSong,
+            artist: newArtist,
+            duration: newDuration,
+          };
+        }
+      );
+      await Promise.all([
+        this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),
+        this.page.waitForSelector(
           `ytmusic-player-bar span.subtitle yt-formatted-string a`
-        );
-        const videoElement: HTMLVideoElement = document.querySelector(`video`);
+        ),
+        this.page.waitForSelector(`video`),
+      ]);
 
-        //@ts-ignore
-        handlePlayUpdate(
-          newSongElement.innerText,
-          newArtistElement.innerText,
-          videoElement.duration
-        );
+      await this.page.evaluate(() => {
+        const videoElement = document.querySelector('video');
+        videoElement.addEventListener('canplay', () => {
+          const newSongElement: HTMLElement = document.querySelector(
+            `ytmusic-player-bar yt-formatted-string`
+          );
+          const newArtistElement: HTMLElement = document.querySelector(
+            `ytmusic-player-bar span.subtitle yt-formatted-string a`
+          );
+          const videoElement: HTMLVideoElement =
+            document.querySelector(`video`);
+
+          //@ts-ignore
+          handlePlayUpdate(
+            newSongElement.innerText,
+            newArtistElement.innerText,
+            videoElement.duration
+          );
+        });
       });
-    });
+    } catch (error) {
+      console.log('Error in setting up MutationObserver for song updates.');
+      console.error(error);
+    }
   }
 }

@@ -16,8 +16,13 @@ export class YTMusicPlaybackControls {
   constructor(private page: Page) {}
 
   private async execute(control: YTControl) {
-    await this.page.waitForSelector(control);
-    await this.page.click(control);
+    try {
+      await this.page.waitForSelector(control);
+      await this.page.click(control);
+    } catch (error) {
+      console.log('Error while trying to activate playback controls.');
+      console.error(error);
+    }
   }
 
   public async playPause() {
@@ -29,15 +34,4 @@ export class YTMusicPlaybackControls {
   public async previous() {
     await this.execute(YTControl.Previous);
   }
-
-  // /**
-  //  * The available playback controls for a YTMusicSession.
-  //  */
-  // public get controlActions(): PlaybackActions[] {
-  //   return [
-  //     { label: '⏮', value: () => this.execute(YTControl.Previous) },
-  //     { label: '⏯', value: () =>  },
-  //     { label: '⏭', value:  },
-  //   ];
-  // }
 }

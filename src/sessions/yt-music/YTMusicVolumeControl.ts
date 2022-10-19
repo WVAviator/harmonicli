@@ -7,10 +7,15 @@ export class YTMusicVolumeControl {
   }
 
   private async getInitialVolume() {
-    await this.page.waitForSelector('video');
-    this.volume = await this.page.$eval('video', (el: HTMLVideoElement) => {
-      return el.volume;
-    });
+    try {
+      await this.page.waitForSelector('video');
+      this.volume = await this.page.$eval('video', (el: HTMLVideoElement) => {
+        return el.volume;
+      });
+    } catch (error) {
+      console.log('Error while trying to read media volume.');
+      console.error(error);
+    }
   }
 
   /**
@@ -25,13 +30,17 @@ export class YTMusicVolumeControl {
    * @param volume A value between 0 and 1 (0% to 100% volume) to which to set the music volume.
    */
   public async setVolume(volume: number) {
-    if (volume < 0 || volume > 1) return;
-    await this.page.evaluate((volume: number) => {
-      const volumeSlider: HTMLInputElement =
-        document.querySelector('#volume-slider');
-      volumeSlider.value = Math.floor(volume * 100).toString();
-      volumeSlider.dispatchEvent(new Event('change'));
-    }, volume);
-    this.volume = volume;
+    try {
+      await this.page.evaluate((volume: number) => {
+        const volumeSlider: HTMLInputElement =
+          document.querySelector('#volume-slider');
+        volumeSlider.value = Math.floor(volume * 100).toString();
+        volumeSlider.dispatchEvent(new Event('change'));
+      }, volume);
+      this.volume = volume;
+    } catch (error) {
+      console.log('Error while trying to update volume.');
+      console.error(error);
+    }
   }
 }

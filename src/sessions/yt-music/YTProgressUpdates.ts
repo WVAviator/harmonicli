@@ -35,37 +35,52 @@ export class YTProgressUpdates {
    * Force a lookup of the current song progress. Useful when the DOM first loads before a MutationObserver can be set up.
    */
   public async forceProgressUpdate() {
-    await this.page.waitForSelector(`video`);
+    try {
+      await this.page.waitForSelector(`video`);
 
-    const updatedTime = await this.page.$eval(
-      `video`,
-      (element: HTMLVideoElement) => element.currentTime
-    );
+      const updatedTime = await this.page.$eval(
+        `video`,
+        (element: HTMLVideoElement) => element.currentTime
+      );
 
-    this.currentTime = updatedTime;
+      this.currentTime = updatedTime;
+    } catch (error) {
+      console.log(
+        'Error occurred when forcing an update to curent song progress.'
+      );
+      console.error(error);
+    }
   }
 
   private async handleProgressUpdate() {
-    await this.page.exposeFunction(
-      'handleTimeUpdate',
-      (updatedTime: number) => {
-        this.currentTime = updatedTime;
-      }
-    );
+    try {
+      await this.page.exposeFunction(
+        'handleTimeUpdate',
+        (updatedTime: number) => {
+          this.currentTime = updatedTime;
+        }
+      );
 
-    await this.page.waitForSelector(`video`);
+      await this.page.waitForSelector(`video`);
 
-    await this.page.evaluate(() => {
-      const observer = new MutationObserver(() => {
-        const videoElement: HTMLVideoElement = document.querySelector(`video`);
+      await this.page.evaluate(() => {
+        const observer = new MutationObserver(() => {
+          const videoElement: HTMLVideoElement =
+            document.querySelector(`video`);
 
-        //@ts-ignore
-        handleTimeUpdate(videoElement.currentTime);
+          //@ts-ignore
+          handleTimeUpdate(videoElement.currentTime);
+        });
+
+        observer.observe(document.querySelector('#progress-bar'), {
+          attributes: true,
+        });
       });
-
-      observer.observe(document.querySelector('#progress-bar'), {
-        attributes: true,
-      });
-    });
+    } catch (error) {
+      console.log(
+        'Error in setting up MutationObserver for song progress updates.'
+      );
+      console.error(error);
+    }
   }
 }

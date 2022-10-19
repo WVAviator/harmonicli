@@ -28,8 +28,13 @@ export class YTSearchHandler {
    */
   public async play(playID: string) {
     if (playID === 'No results found.') return;
-    // Have to do it this way becuase some play buttons may be off the screen or under elements that will break things if clicked.
-    await this.page.$eval(`.${playID}`, (el: HTMLElement) => el.click());
+    try {
+      // Have to do it this way becuase some play buttons may be off the screen or under elements that will break things if clicked.
+      await this.page.$eval(`.${playID}`, (el: HTMLElement) => el.click());
+    } catch (error) {
+      console.log('Error in trying to play song with ID', playID);
+      console.error(error);
+    }
   }
 
   /**
@@ -38,34 +43,39 @@ export class YTSearchHandler {
    */
   public async search(query: string | string[]) {
     if (query) {
-      if (Array.isArray(query)) query = query.join(' ');
+      try {
+        if (Array.isArray(query)) query = query.join(' ');
 
-      const currentQuery = await this.page.$eval(
-        'div.search-box input',
-        (el: HTMLInputElement) => el.value
-      );
-      if (currentQuery == query) return;
+        const currentQuery = await this.page.$eval(
+          'div.search-box input',
+          (el: HTMLInputElement) => el.value
+        );
+        if (currentQuery == query) return;
 
-      // Reset songList.
-      this.searchResults = [];
+        // Reset songList.
+        this.searchResults = [];
 
-      // Click search bar (bring it to focus for next steps)
-      await Promise.all([
-        this.page.waitForSelector('div.search-box input'),
-        this.page.click('div.search-box input'),
-      ]);
+        // Click search bar (bring it to focus for next steps)
+        await Promise.all([
+          this.page.waitForSelector('div.search-box input'),
+          this.page.click('div.search-box input'),
+        ]);
 
-      // Clear search bar
-      await this.page.keyboard.down('Shift');
-      for (let i = 0; i < currentQuery.length; i++) {
-        await this.page.keyboard.press('ArrowLeft');
+        // Clear search bar
+        await this.page.keyboard.down('Shift');
+        for (let i = 0; i < currentQuery.length; i++) {
+          await this.page.keyboard.press('ArrowLeft');
+        }
+        await this.page.keyboard.up('Shift');
+        await this.page.keyboard.press('Backspace');
+
+        // Enter new query
+        await this.page.keyboard.type(query);
+        await this.page.keyboard.press('Enter');
+      } catch (error) {
+        console.log('Error occurred when trying to search for query:', query);
+        console.error(error);
       }
-      await this.page.keyboard.up('Shift');
-      await this.page.keyboard.press('Backspace');
-
-      // Enter new query
-      await this.page.keyboard.type(query);
-      await this.page.keyboard.press('Enter');
     }
 
     // Update songList and send to subscribers
@@ -75,48 +85,45 @@ export class YTSearchHandler {
 
   private async updateSongList(shouldMinimize: boolean) {
     let error = false;
+    try {
+      if (shouldMinimize) {
+        // Minimize player
+        await Promise.all([
+          this.page.waitForSelector('.player-minimize-button'),
+          this.page.click('.player-minimize-button'),
+        ]);
+      }
 
-    if (shouldMinimize) {
-      // Minimize player
-      await Promise.all([
-        this.page.waitForSelector('.player-minimize-button'),
-        this.page.click('.player-minimize-button'),
-      ]);
-    }
+      // Click song filter
+      await this.page.click('a[title="Show song results"]');
 
-    // Click song filter
-    await this.page
-      .click('a[title="Show song results"]')
-      .catch((_) => (error = true));
+      // Wait for the song element selector if it exists.
+      if (!error)
+        await this.page.waitForSelector(
+          'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
+        );
 
-    // Wait for the song element selector if it exists.
-    if (!error)
-      await this.page.waitForSelector(
-        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
+      // Check for songs.
+      await this.page.$$eval(
+        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+        (songs) => {
+          if (songs.length <= 0) error = true;
+        }
       );
 
-    // Check for songs.
-    await this.page.$$eval(
-      'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-      (songs) => {
-        if (songs.length <= 0) error = true;
-      }
-    );
-
-    // Expand search results
-    await this.page
-      .$eval(
+      // Expand search results
+      await this.page.$eval(
         'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
         (el: HTMLAnchorElement) => {
           el.click();
         }
-      )
-      .catch((err) => {
-        error = true;
-      });
+      );
 
-    // If there are errors, show no results found.
-    if (error) {
+      // If there are errors, show no results found.
+    } catch (error) {
+      console.log('Error occurred while updating the song list.');
+      console.error(error);
+
       this.searchResults = [];
       return;
     }
@@ -144,40 +151,49 @@ export class YTSearchHandler {
     //   }
     // );
 
-    const songs: Song[] = await this.page.evaluate(() => {
-      // Only the first 11 songs will have a play button attached.
-      const getSongInfo = (elements) => {
-        const info: Song[] = [];
-        elements.forEach(
-          (element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
-            // There will be a better limit soon™️.
-            if (index >= 11) return;
+    let songs: Song[] = [];
 
-            const playID = `_YTPlayButton-${index}`;
-            const playButton = element.querySelector('#play-button');
-            if (playButton) {
-              playButton.setAttribute(
-                'class',
-                `${element.getAttribute('class')} ${playID}`
-              );
+    try {
+      songs = await this.page.evaluate(() => {
+        // Only the first 11 songs will have a play button attached.
+        const getSongInfo = (elements) => {
+          const info: Song[] = [];
+          elements.forEach(
+            (element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
+              // There will be a better limit soon™️.
+              if (index >= 11) return;
+
+              const playID = `_YTPlayButton-${index}`;
+              const playButton = element.querySelector('#play-button');
+              if (playButton) {
+                playButton.setAttribute(
+                  'class',
+                  `${element.getAttribute('class')} ${playID}`
+                );
+              }
+              info.push({
+                song: element.querySelectorAll('a')[0].innerText,
+                artist: element.querySelectorAll('a')[1].innerText,
+                duration: element.querySelectorAll('span')[2].innerText,
+                playID: playButton ? playID : null,
+              });
             }
-            info.push({
-              song: element.querySelectorAll('a')[0].innerText,
-              artist: element.querySelectorAll('a')[1].innerText,
-              duration: element.querySelectorAll('span')[2].innerText,
-              playID: playButton ? playID : null,
-            });
-          }
-        );
-        return info;
-      };
+          );
+          return info;
+        };
 
-      return getSongInfo(
-        document.querySelectorAll(
-          'ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer'
-        )
+        return getSongInfo(
+          document.querySelectorAll(
+            'ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer'
+          )
+        );
+      });
+    } catch (error) {
+      console.log(
+        'Error occurred when trying to load songs for search results.'
       );
-    });
+      console.error(error);
+    }
 
     this.searchResults = songs;
   }
