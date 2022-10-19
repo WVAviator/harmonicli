@@ -11,5 +11,8 @@ export const logOutput = (file: string) => {
     log_stdout.write(util.format(logStr) + '\n');
   };
 
-  console.error = console.log;
+  console.error = function (...args: string[]) {
+    const logStr = args.join(' ');
+    log_file.write(util.format(logStr) + '\n');
+  };
 };
