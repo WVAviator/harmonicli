@@ -52,9 +52,6 @@ export class YTSearchHandler {
         );
         if (currentQuery == query) return;
 
-        // Reset songList.
-        this.searchResults = [];
-
         // Click search bar (bring it to focus for next steps)
         await Promise.all([
           this.page.waitForSelector('div.search-box input'),
@@ -75,6 +72,8 @@ export class YTSearchHandler {
       } catch (error) {
         console.log('Error occurred when trying to search for query:', query);
         console.error(error);
+        this.searchResults = [];
+        return;
       }
     }
 
@@ -121,8 +120,8 @@ export class YTSearchHandler {
 
       // If there are errors, show no results found.
     } catch (error) {
-      console.log('Error occurred while updating the song list.');
-      console.error(error);
+      // console.error('Error occurred while updating the song list.');
+      // console.error(error);
 
       this.searchResults = [];
       return;
@@ -193,6 +192,8 @@ export class YTSearchHandler {
         'Error occurred when trying to load songs for search results.'
       );
       console.error(error);
+      this.searchResults = [];
+      return;
     }
 
     this.searchResults = songs;
