@@ -23,7 +23,7 @@ export class Logger {
 
     this._logFile.write(this._options.sessionPrefix);
     const fileLogger = (logOutput: string) => {
-      this._logFile.write(logOutput);
+      this._logFile.write(logOutput + '\n');
     };
     this.addListener(fileLogger);
 
@@ -61,12 +61,12 @@ export class Logger {
     // hookStream(process.stderr, consoleHook);
 
     console.log = (...data: string[]) => {
-      const outputLog = `${this._options.logPrefix}${data.join(' ')}\n`;
+      const outputLog = `${this._options.logPrefix}${data.join(' ')}`;
       this._logListeners.forEach((listener) => listener(outputLog));
     };
 
     console.error = (data: Error) => {
-      const outputLog = `${this._options.logPrefix}${data.stack}\n`;
+      const outputLog = `${this._options.logPrefix}${data.stack}`;
       this._logListeners.forEach((listener) => listener(outputLog));
     };
   }

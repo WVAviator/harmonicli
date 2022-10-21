@@ -78,7 +78,9 @@ export class YTPlayUpdates {
         }
       );
       await Promise.all([
-        this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`),
+        this.page.waitForSelector(`ytmusic-player-bar yt-formatted-string`, {
+          timeout: 0,
+        }),
         this.page.waitForSelector(
           `ytmusic-player-bar span.subtitle yt-formatted-string a`
         ),

@@ -61,7 +61,9 @@ export class YTProgressUpdates {
         }
       );
 
-      await this.page.waitForSelector(`video`);
+      await this.page.waitForSelector(`video`, {
+        timeout: 0,
+      });
 
       await this.page.evaluate(() => {
         const observer = new MutationObserver(() => {

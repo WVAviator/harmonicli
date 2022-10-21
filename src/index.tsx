@@ -4,6 +4,7 @@ import { render } from 'ink';
 import { Command } from 'commander';
 import { App } from './App';
 import { Logger } from './utilities/logging/Logger';
+import LogProvider from './components/LogProvider/LogProvider';
 
 const program = new Command();
 
@@ -28,14 +29,15 @@ const options = program.opts();
 const logger = new Logger();
 
 render(
-  <App
-    logger={logger}
-    sessionOptions={{
-      args: program.args,
-      headless: !!options.headless,
-    }}
-    debug={options.debug}
-  />,
+  <LogProvider value={logger}>
+    <App
+      sessionOptions={{
+        args: program.args,
+        headless: !!options.headless,
+      }}
+      debug={options.debug}
+    />
+  </LogProvider>,
   {
     patchConsole: false,
   }

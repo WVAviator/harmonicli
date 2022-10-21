@@ -19,7 +19,7 @@ const LogOutputWindow: React.FC = () => {
   return (
     <Box borderStyle="round" minHeight={7}>
       <Text>
-        {logs.map((log) => {
+        {logs.slice(logs.length - 6).map((log) => {
           return log + '\n';
         })}
       </Text>

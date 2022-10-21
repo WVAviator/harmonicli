@@ -112,7 +112,7 @@ export class YTMusicSession extends BrowserSession {
       const songResultsSelector = 'a[title="Show song results"]';
 
       // Make sure we get only songs. Give up after four seconds.
-      this.page.waitForSelector(songResultsSelector, {
+      await this.page.waitForSelector(songResultsSelector, {
         timeout: 4000,
       });
 
@@ -178,10 +178,6 @@ export class YTMusicSession extends BrowserSession {
    * @param query
    */
   public async search(query: string): Promise<void> {
-    if (!this.currentSong) {
-      //TODO: Do something different here because the usual search selector doesn't exist on home page?
-      return;
-    }
     await this.searchHandler.search(query);
   }
 

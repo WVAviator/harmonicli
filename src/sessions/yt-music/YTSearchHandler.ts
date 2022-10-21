@@ -46,6 +46,17 @@ export class YTSearchHandler {
       try {
         if (Array.isArray(query)) query = query.join(' ');
 
+        await this.page.waitForSelector('#icon');
+
+        const isVisible = await this.page.$eval(
+          'div.search-box input',
+          (el: HTMLElement) => window.getComputedStyle(el).display !== 'none'
+        );
+
+        if (!isVisible) {
+          await this.page.$eval('#icon', (el: HTMLElement) => el.click());
+        }
+
         const currentQuery = await this.page.$eval(
           'div.search-box input',
           (el: HTMLInputElement) => el.value
@@ -53,13 +64,9 @@ export class YTSearchHandler {
         if (currentQuery == query) return;
 
         // Click search bar (bring it to focus for next steps)
-        await Promise.all([
-          this.page.waitForSelector('div.search-box input'),
-          this.page.click('div.search-box input'),
-        ]);
-
-        // Clear search bar
-        await this.page.keyboard.down('Shift');
+        await this.page.click('div.search-box input'),
+          // Clear search bar
+          await this.page.keyboard.down('Shift');
         for (let i = 0; i < currentQuery.length; i++) {
           await this.page.keyboard.press('ArrowLeft');
         }
@@ -85,43 +92,53 @@ export class YTSearchHandler {
   private async updateSongList(shouldMinimize: boolean) {
     let error = false;
     try {
-      if (shouldMinimize) {
-        // Minimize player
-        await Promise.all([
-          this.page.waitForSelector('.player-minimize-button'),
-          this.page.click('.player-minimize-button'),
-        ]);
-      }
+      // if (shouldMinimize) {
+      //   await this.page.waitForSelector('.player-minimize-button');
+      //   // Minimize player
+      //   await Promise.all([
+      //     ,
+      //     this.page.click('.player-minimize-button'),
+      //   ]);
+      // }
 
-      // Click song filter
-      await this.page.click('a[title="Show song results"]');
+      const songResultsSelector = 'a[title="Show song results"]';
+
+      // Make sure we get only songs. Give up after four seconds.
+      await this.page.waitForSelector(songResultsSelector, {
+        timeout: 4000,
+      });
+
+      await Promise.all([
+        this.page.click(songResultsSelector),
+        this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
+      ]);
 
       // Wait for the song element selector if it exists.
-      if (!error)
-        await this.page.waitForSelector(
-          'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
-        );
+      // if (!error)
+      //   await this.page.waitForSelector(
+      //     'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
+      //   );
 
-      // Check for songs.
-      await this.page.$$eval(
-        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-        (songs) => {
-          if (songs.length <= 0) error = true;
-        }
-      );
+      // // Check for songs.
+      // await this.page.$$eval(
+      //   'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+      //   (songs) => {
+      //     if (songs.length <= 0) throw new Error();
+      //   }
+      // );
 
-      // Expand search results
-      await this.page.$eval(
-        'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-        (el: HTMLAnchorElement) => {
-          el.click();
-        }
-      );
+      // // Expand search results
+      // await this.page.$eval(
+      //   'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
+      //   (el: HTMLAnchorElement) => {
+      //     el.click();
+      //   }
+      // );
 
       // If there are errors, show no results found.
     } catch (error) {
-      // console.error('Error occurred while updating the song list.');
-      // console.error(error);
+      console.log('Error occurred while updating the song list.');
+      console.error(error);
 
       this.searchResults = [];
       return;

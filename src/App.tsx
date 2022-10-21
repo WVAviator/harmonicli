@@ -17,13 +17,11 @@ import LogOutputWindow from './components/LogOutputWindow/LogOutputWindow';
 interface AppProps {
   sessionOptions?: Partial<SessionOptions>;
   debug?: boolean;
-  logger: Logger;
 }
 
 export const App: React.FC<AppProps> = ({
   sessionOptions = {},
   debug = false,
-  logger,
 }) => {
   const [session, setSession] = useState(null);
 
@@ -46,28 +44,26 @@ export const App: React.FC<AppProps> = ({
   }, []);
 
   return (
-    <LogProvider value={logger}>
-      <BrowserSessionProvider value={session}>
-        {debug && <LogOutputWindow />}
-        {session ? (
-          <>
-            <NowPlaying />
-            <SongProgress />
-            <PlaybackControls />
-            <VolumeControl />
-            <SearchBar />
-          </>
-        ) : (
-          <Text>
-            <Gradient name="summer">
-              <Text>
-                <Spinner type="bouncingBall" />
-              </Text>
-            </Gradient>
-            {' Loading'}
-          </Text>
-        )}
-      </BrowserSessionProvider>
-    </LogProvider>
+    <BrowserSessionProvider value={session}>
+      {debug && <LogOutputWindow />}
+      {session ? (
+        <>
+          <NowPlaying />
+          <SongProgress />
+          <PlaybackControls />
+          <VolumeControl />
+          <SearchBar />
+        </>
+      ) : (
+        <Text>
+          <Gradient name="summer">
+            <Text>
+              <Spinner type="bouncingBall" />
+            </Text>
+          </Gradient>
+          {' Loading'}
+        </Text>
+      )}
+    </BrowserSessionProvider>
   );
 };
