@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { YTMusicSession } from './sessions/yt-music/YTMusicSession';
 import BrowserSessionProvider from './components/BrowserSessionProvider/BrowserSessionProvider';
 import { SessionOptions } from './sessions/base/SessionOptions';
@@ -10,18 +10,25 @@ import NowPlaying from './components/NowPlaying/NowPlaying';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import { SearchBar } from './components/SearchBar/SearchBar';
 import VolumeControl from './components/VolumeControl/VolumeControl';
+import LogProvider from './components/LogProvider/LogProvider';
+import { Logger } from './utilities/logging/Logger';
+import LogOutputWindow from './components/LogOutputWindow/LogOutputWindow';
 
 interface AppProps {
-  options?: Partial<SessionOptions>;
+  sessionOptions?: Partial<SessionOptions>;
+  debug?: boolean;
 }
 
-export const App: React.FC<AppProps> = ({ options = {} }) => {
+export const App: React.FC<AppProps> = ({
+  sessionOptions = {},
+  debug = false,
+}) => {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
     const establishSession = async () => {
       //TODO: Un-hardcode YTMusicSession here so that SpotifySessions can be instantated as well.
-      const newSession = await YTMusicSession.create(options);
+      const newSession = await YTMusicSession.create(sessionOptions);
       setSession(newSession);
     };
 
@@ -38,6 +45,7 @@ export const App: React.FC<AppProps> = ({ options = {} }) => {
 
   return (
     <BrowserSessionProvider value={session}>
+      {debug && <LogOutputWindow />}
       {session ? (
         <>
           <NowPlaying />
