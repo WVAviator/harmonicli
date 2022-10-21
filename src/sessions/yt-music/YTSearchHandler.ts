@@ -86,21 +86,12 @@ export class YTSearchHandler {
 
     // Update songList and send to subscribers
     await this.page.waitForNetworkIdle();
-    this.updateSongList(query.length <= 0);
+    this.updateSongList();
   }
 
-  private async updateSongList(shouldMinimize: boolean) {
+  private async updateSongList() {
     let error = false;
     try {
-      // if (shouldMinimize) {
-      //   await this.page.waitForSelector('.player-minimize-button');
-      //   // Minimize player
-      //   await Promise.all([
-      //     ,
-      //     this.page.click('.player-minimize-button'),
-      //   ]);
-      // }
-
       const songResultsSelector = 'a[title="Show song results"]';
 
       // Make sure we get only songs. Give up after four seconds.
@@ -112,28 +103,6 @@ export class YTSearchHandler {
         this.page.click(songResultsSelector),
         this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
       ]);
-
-      // Wait for the song element selector if it exists.
-      // if (!error)
-      //   await this.page.waitForSelector(
-      //     'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer'
-      //   );
-
-      // // Check for songs.
-      // await this.page.$$eval(
-      //   'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-      //   (songs) => {
-      //     if (songs.length <= 0) throw new Error();
-      //   }
-      // );
-
-      // // Expand search results
-      // await this.page.$eval(
-      //   'tp-yt-paper-button yt-formatted-string.ytmusic-shelf-renderer',
-      //   (el: HTMLAnchorElement) => {
-      //     el.click();
-      //   }
-      // );
 
       // If there are errors, show no results found.
     } catch (error) {
@@ -148,25 +117,6 @@ export class YTSearchHandler {
     await this.page.waitForNetworkIdle();
 
     // Format the song info so we can pass to the song selector.
-
-    // This didn't work? Will play with later.
-    // const songs: Song[] = await this.page.$$eval(
-    //   'ytmusic-shelf-renderer div#contents ytmusic-responsive-list-item-renderer',
-    //   (elements) => {
-    //     return elements.map((element: HTMLSpanElement | HTMLAnchorElement, index: number) => {
-    //       if (index >= 11) return;
-    //       const playID = `_YTPlayButton-${index}`;
-    //       element.querySelector('#play-button')?.setAttribute('class', `${element.getAttribute('class')} ${playID}`);
-    //       return ({
-    //         title: element.querySelectorAll('a')[0].innerText,
-    //         artist: element.querySelectorAll('a')[1].innerText,
-    //         duration: element.querySelectorAll('span')[2].innerText,
-    //         playID: playID,
-    //       });
-    //     });
-    //   }
-    // );
-
     let songs: Song[] = [];
 
     try {
