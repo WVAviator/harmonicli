@@ -1,4 +1,4 @@
-import React, { useContext, FC, useEffect } from 'react';
+import React, { useContext, FC } from 'react';
 import useSongList from '../../hooks/useSongList';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import SelectInput from 'ink-select-input/build';
@@ -35,25 +35,13 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
     };
   });
 
-  if (state.searchResultActive) {
-    if (songList?.at(0) !== undefined) {
-      return (
-        <>
-          <SelectInput items={parsedSongSelections} onSelect={handleSelect} />
-        </>
-      );
-    }
-    return (
-      <Text>
-        <Gradient name="summer">
-          <Text>
-            <Spinner type="bouncingBall" />
-          </Text>
-        </Gradient>
-        {' Loading Results'}
-      </Text>
-    );
-  }
-
-  return null;
+  return (
+    <>
+      {songList?.length ? (
+        <SelectInput items={parsedSongSelections} onSelect={handleSelect} />
+      ) : (
+        <Text>No results found.</Text>
+      )}
+    </>
+  );
 };

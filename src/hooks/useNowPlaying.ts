@@ -8,7 +8,11 @@ import { Song } from '../sessions/base/BrowserSession';
  */
 const useNowPlaying = () => {
   const session = useContext(BrowserSessionContext);
-  const [nowPlaying, setNowPlaying] = useState<Song>(session.currentSong);
+  const [nowPlaying, setNowPlaying] = useState<Song>({
+    song: null,
+    artist: null,
+    duration: 0,
+  });
 
   useEffect(() => {
     const handleSongUpdate = (value: Song) => {

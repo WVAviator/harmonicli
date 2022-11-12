@@ -1,3 +1,4 @@
 node_modules
 bin
 .yarn/cache
+debug.log
