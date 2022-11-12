@@ -1,14 +1,26 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TextInput from 'ink-text-input';
 import { Box } from 'ink';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import { SearchResults } from './SearchResults';
+import Gradient from 'ink-gradient';
+import Spinner from 'ink-spinner';
 
 export const SearchBar = () => {
   const session = useContext(BrowserSessionContext);
   const [inputValue, setInputValue] = useState('');
   const [searchResultActive, setSearchResultActive] = useState(false);
   const [loadingResults, setLoadingResults] = useState(false);
+
+  useEffect(() => {
+    const handleSearchResultsUpdate = () => {
+      setLoadingResults(false);
+    };
+    session.addListener('searchResults', handleSearchResultsUpdate);
+    return () => {
+      session.removeListener('searchResults', handleSearchResultsUpdate);
+    };
+  }, []);
 
   const handleSearchSubmit = function (query: string) {
     setSearchResultActive(true);

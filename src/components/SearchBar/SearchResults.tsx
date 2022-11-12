@@ -1,4 +1,4 @@
-import React, { useContext, FC } from 'react';
+import React, { useContext, FC, useState } from 'react';
 import useSongList from '../../hooks/useSongList';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import SelectInput from 'ink-select-input/build';
@@ -66,5 +66,4 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
   }
 
   return view();
-
 };
