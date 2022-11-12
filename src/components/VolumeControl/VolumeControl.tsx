@@ -9,13 +9,18 @@ const VOLUME_STRING = '▁▂▂▃▃▄▄▅▅▆';
 /**
  * A focusable component that allows changing the volume of the music. Focus can be set to this component with id 'volume-control'.
  */
-const VolumeControl: React.FC = () => {
+const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   const session = useContext(BrowserSessionContext);
   const [volume, setVolume] = useState(MAX_VOLUME);
   const [isSelected, setIsSelected] = useState(false);
 
-  const { isFocused } = useFocus({ id: 'volume-control' });
-  const { focusNext, focusPrevious } = useFocusManager();
+  // const { isFocused } = useFocus({ id: 'volume-control' });
+  let { focusNext, focusPrevious } = {focusNext: (...args) => null, focusPrevious: (...args) => null};
+  if (isFocused === undefined || isFocused === null) {
+    isFocused = useFocus({ id: 'volume-control' }).isFocused;
+    focusNext = useFocusManager().focusNext;
+    focusPrevious = useFocusManager().focusPrevious;
+  }
 
   const increaseVolume = () => {
     if (volume === MAX_VOLUME) return;

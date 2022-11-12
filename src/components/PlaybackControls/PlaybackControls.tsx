@@ -1,13 +1,14 @@
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
 import React, { useContext, useMemo, useState } from 'react';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
+import { State } from '../MainMenu/MainMenu';
 
 /**
  * Displays available playback controls in the current browser context. The controls are displayed in adjacent boxes and can be selected with left and right arrows when the component is focused.
  *
  * The component can be focused with focus ID 'playback-controls'.
  */
-const PlaybackControls: React.FC = () => {
+const PlaybackControls: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   const session = useContext(BrowserSessionContext);
   const controls = useMemo(() => {
     return [
@@ -19,8 +20,12 @@ const PlaybackControls: React.FC = () => {
 
   const [selectedControlIndex, setSelectedControlIndex] = useState(1);
 
-  const { isFocused } = useFocus({ autoFocus: true, id: 'playback-controls' });
-  const { focusNext } = useFocusManager();
+  // const { isFocused } = useFocus({ autoFocus: true, id: 'playback-controls' });
+  if (isFocused === undefined || isFocused === null) {
+    isFocused = useFocus({ autoFocus: true, id: 'playback-controls' }).isFocused;
+  }
+
+  // const { focusNext } = useFocusManager();
 
   useInput((_, key) => {
     if (!isFocused) return;
@@ -35,7 +40,7 @@ const PlaybackControls: React.FC = () => {
     }
     if (key.downArrow) {
       setSelectedControlIndex(1);
-      focusNext();
+      // focusNext();
     }
     if (key.return) {
       controls[selectedControlIndex].value();
