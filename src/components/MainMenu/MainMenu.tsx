@@ -1,6 +1,5 @@
-import React, { Children, createContext, FC, ReactElement, ReactNode, useState } from "react";
-import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
-import { KeyObject } from "crypto";
+import React, { FC, ReactElement, useState } from "react";
+import { Box, Text, useInput } from 'ink';
 
 export type Item = {
     label: string, // The label for the item.
@@ -20,7 +19,8 @@ export type State = {
     buttonBoxFocused: boolean,
 }
 
-// This is only here so we can have default values in the state initilizer. Couldn't figure out another way.
+// This is only here so we can have undefined values in selectedStateHelper. Couldn't figure out another way.
+// Most likely can be refactored.
 type StateUnknown = {
     buttonId?: number,
     childId?: number,
@@ -122,14 +122,6 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
 
             if (key.upArrow) {
 
-                // // If the selected buttonId is out of range, reset to 0
-                // if (selected.buttonId - 3 < 0) {
-                //     setSelected(selectedStateHelper({
-                //         buttonId: 0,
-                //     }));
-                //     return;
-                // }
-
                 // If we're at the top row, go to child box
                 if (selected.buttonId <= 2 && !selected.buttonFocused) {
                     setSelected(selectedStateHelper({
@@ -150,14 +142,6 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
             }
 
             if (key.downArrow) {
-
-                // If the selected buttonId is out of range, reset it to last index
-                // if (selected.buttonId + 3 >= items.length) {
-                //     setSelected(selectedStateHelper({
-                //         buttonId: items.length - 1,
-                //     }));
-                //     return;
-                // }
 
                 // If we're at the bottom row, go to child box
                 if (selected.buttonId >= items.length-2 && !selected.buttonFocused) {
@@ -222,13 +206,10 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
                 
                 // Leave the focused item.
                 if (selected.buttonFocused) {
-                    // setSelected( { id: selected.buttonId, focused: false, childrenSelected: false, } );
                     setSelected(selectedStateHelper({
                         buttonId: selected.buttonId,
                         buttonFocused: false,
                     }));
-                    // Sometimes this component gets unfocused when pressing escape. That's what this is for.
-                    // focus('main-menu');
                     return;
                 }
             }
@@ -236,7 +217,8 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
     });
 
     // This might be able to be refactored further.
-    const mapRows = (items) => {
+    // Inner for loop is there due to the continue keyword.
+    const mapRows = (items: Item[]) => {
         if (!items) new Error('No items provided to mapRows.');
         const cols = new Array(Math.ceil(items.length/3)).fill(null);
         return cols.map((_, i) => {
