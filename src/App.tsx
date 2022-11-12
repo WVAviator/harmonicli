@@ -45,12 +45,14 @@ export const App: React.FC<AppProps> = ({ options = {} }) => {
   return (
     <BrowserSessionProvider value={session}>
       {session ? (
-        <MainMenu items={testItems}>
+        <>
           <NowPlaying />
           <SongProgress />
-          <PlaybackControls />
-          <VolumeControl />
-        </MainMenu>
+          <MainMenu items={testItems}>
+            <PlaybackControls />
+            <VolumeControl />
+          </MainMenu>
+        </>
       ) : (
         <Text>
           <Gradient name="summer">
