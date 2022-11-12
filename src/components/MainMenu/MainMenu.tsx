@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useState } from "react";
+import React, { Children, createContext, FC, ReactElement, ReactNode, useState } from "react";
 import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
 
 export type Item = {
@@ -7,17 +7,10 @@ export type Item = {
     action?: (id: number) => void, // An optional function to call when the item is selected.
 }
 
-const MainMenu: FC<{ items: Item[] }> = ({ items }) => {
-    const [ selected, setSelected ] = useState({ id: 0, focused: false });
+const MainMenu: FC<{ items: Item[], children?: any }> = ({ items, children }) => {
+    const [ selected, setSelected ] = useState({ id: 0, focused: false, childrenSelected: false });
     const { isFocused } = useFocus({ id: 'main-menu' })
-    const { focusNext, focusPrevious } = useFocusManager();
-
-    /**
-     * 
-     * [ button1, button2, button3,
-     *   button4, button5, button6 ]
-     * 
-     */
+    const { focus, focusNext, focusPrevious } = useFocusManager();
 
     useInput((_, key) => {
         if (!isFocused) return;
@@ -37,102 +30,87 @@ const MainMenu: FC<{ items: Item[] }> = ({ items }) => {
         // Go up to the item above the current item.
         if (key.upArrow) {
             if (selected.id - 3 < 0 || selected.focused) return;
-            setSelected({ id: selected.id - 3, focused: false });
+            setSelected({ id: selected.id - 3, focused: false, childrenSelected: false, });
         }
 
         // Go down to the item below the current item.
         if (key.downArrow) {
             if (selected.id + 3 >= items.length || selected.focused) return;
-            setSelected({ id: selected.id + 3, focused: false });
+            setSelected({ id: selected.id + 3, focused: false, childrenSelected: false, });
         }
 
         // Go to the previous item
         if (key.leftArrow) {
             if (selected.id === 0 || selected.focused) return;
-            setSelected({ id: selected.id-1, focused: false });
+            setSelected({ id: selected.id-1, focused: false, childrenSelected: false, });
         }
 
         // Go to the next item
         if (key.rightArrow) {
             if (selected.id === items.length-1 || selected.focused) return;
-            setSelected({ id: selected.id+1, focused: false });
+            setSelected({ id: selected.id+1, focused: false, childrenSelected: false, });
         }
 
         // Leave the focused item
-        if (key.escape) {
-            setSelected( { id: selected.id, focused: false } );
+        if (key.escape && selected.focused) {
+            setSelected( { id: selected.id, focused: false, childrenSelected: false, } );
+            // Sometimes this component gets unfocused when pressing escape. That's what this is for.
+            focus('main-menu');
         }
 
         // Enter/leave the focused item.
-        if (key.return) {
-            if (!selected.focused) items[selected.id].action(selected.id);
-            setSelected( { id: selected.id, focused: !selected.focused } );
+        if (key.return && !selected.focused) {
+            items[selected.id].action(selected.id);
+            setSelected( { id: selected.id, focused: !selected.focused, childrenSelected: false } );
         }
     });
 
-    // Instead of assigning items to a row, why not map item indexes to a row.
-    // Doing this, all logic related to determining which Item is currently selected will be simpler and we won't have to keep track of the row.
-
-    const rowItems: Item[] = [
-        { label: 'test1', element: <Text>Test1</Text>, action: (id) =>  console.log(id) },
-        { label: 'test2', element: <Text>Test2</Text>, action: (id) =>  console.log(id) },
-        { label: 'test3', element: <Text>Test3</Text>, action: (id) =>  console.log(id) },
-        { label: 'test4', element: <Text>Test4</Text>, action: (id) =>  console.log(id) },
-        { label: 'test5', element: <Text>Test5</Text>, action: (id) =>  console.log(id) }
-    ];
-
-    const rowMapping = [
-        { row: 0, items: [0, 1, 2] },
-        { row: 1, items: [3, 4, 5] },
-        { row: 2, items: [6, 7, 8] },
-    ];
-
-    // Each row will be an array. The array will then me mapped on render. See above.
-
-    const mapRows = () => {
+    // TODO: refactor. This is jank
+    const mapRows = (items) => {
         const mapped = [];
-        items.forEach((item, i) => {
+        for (let i = 0; i < items.length; i+=3) {
             const row = [];
-            if (i%3 === 0) {
-                for (let j = i; j < i+3; j++) {
-                    row.push(
-                        <Box key={i}
-                            borderStyle='round'
-                            borderColor={selected.id === i ? 'yellow' : 'white'}
-                            width={ selected.focused ? '100%' : 21}
-                            display={ selected.focused && selected.id !== i ? 'none' : 'flex' }
-                            >
-                            { selected.focused && selected.id === i ? item.element : <Text>{item.label}</Text> }
-                        </Box>
-                    )
-                }
+            for (let j = i; j < i+3; j++) {
+                if (items[j] === undefined) continue;
+                row.push(
+                    <Box key={`box-${j}`}
+                         borderStyle='round'
+                         borderColor={selected.id === j && isFocused ? 'yellow' : 'white'}
+                         width={ selected.focused ? '100%' : 21}
+                         display={ selected.focused && selected.id !== j ? 'none' : 'flex' }
+                         flexDirection='row'
+                        >
+                        { selected.focused && selected.id === j ? items[j].element : <Text>{`${items[j].label}`}</Text> }
+                    </Box>
+                );
             }
-            mapped.push(row);
-        });
+            mapped.push(
+                <Box width='100%'
+                     key={`row-${i}`} 
+                     justifyContent='center'
+                     >
+                    {row}
+                </Box>
+            );
+        }
         return mapped;
     }
 
     return (
-        <Box borderStyle="round"
-             borderColor={isFocused ? 'red' : 'white'}
-             width={64}
-             justifyContent='center'
-             flexBasis={3}
-            //  height={32}
-             > 
-            { items.map((item: Item, i) => {
-                return (
-                        <Box key={i}
-                            borderStyle='round'
-                            borderColor={selected.id === i ? 'yellow' : 'white'}
-                            width={ selected.focused ? '100%' : 21}
-                            display={ selected.focused && selected.id !== i ? 'none' : 'flex' }
-                            >
-                            { selected.focused && selected.id === i ? item.element : <Text>{item.label}</Text> }
-                        </Box>
-                    )
-                })
-            }
+        <Box width='100%' flexDirection="column">
+            {/* Children components (aka stuff you do not want inside the button rows) */}
+            <Box flexDirection='column'>
+                { children }
+            </Box>
+
+            {/* mapped items */}
+            <Box // borderStyle="round"
+                //  borderColor={isFocused ? 'red' : 'white'}
+                width={64}
+                flexDirection="column"
+                > 
+                { mapRows(items) }
+            </Box>
         </Box>
     )
 }
