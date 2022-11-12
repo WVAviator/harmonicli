@@ -36,20 +36,28 @@ const VolumeControl: React.FC = () => {
   useInput((_, key) => {
     if (!isFocused) return;
 
-    if (key.return) {
-      if (isSelected) {
-        setIsSelected(false);
-        session.volume = volume / MAX_VOLUME;
-      } else {
-        setIsSelected(true);
-      }
-    }
+    // if (key.return) {
+    //   if (isSelected) {
+    //     setIsSelected(false);
+    //     session.volume = volume / MAX_VOLUME;
+    //   } else {
+    //     setIsSelected(true);
+    //   }
+    // }
 
-    if (key.rightArrow && isSelected) {
+    // if (key.rightArrow && isSelected) {
+    //   increaseVolume();
+    // }
+
+    // if (key.leftArrow && isSelected) {
+    //   decreaseVolume();
+    // }
+
+    if (key.rightArrow) {
       increaseVolume();
     }
 
-    if (key.leftArrow && isSelected) {
+    if (key.leftArrow) {
       decreaseVolume();
     }
 
@@ -73,13 +81,16 @@ const VolumeControl: React.FC = () => {
   return (
     <Box>
       <Text color={isFocused ? 'yellow' : 'white'}>{'> '}</Text>
-      {isSelected ? (
+      {/* {isSelected ? (
         <Text color="white">{volumeString}</Text>
       ) : (
         <Gradient name="summer">
           <Text>{volumeString}</Text>
         </Gradient>
-      )}
+      )} */}
+        <Gradient name="summer">
+          <Text>{volumeString}</Text>
+        </Gradient>
     </Box>
   );
 };
