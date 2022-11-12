@@ -1,11 +1,10 @@
-import React, { useContext, FC, useState } from 'react';
+import React, { useContext, FC } from 'react';
 import useSongList from '../../hooks/useSongList';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import SelectInput from 'ink-select-input/build';
-import { Box, Text, useFocusManager, useInput } from 'ink';
+import { Text } from 'ink';
 import Gradient from 'ink-gradient';
 import Spinner from 'ink-spinner';
-import { getFormattedTimeString } from '../../utilities/formatTime';
 
 type SRState = {
   searchResultActive: boolean;

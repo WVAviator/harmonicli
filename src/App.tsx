@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { YTMusicSession } from './sessions/yt-music/YTMusicSession';
 import BrowserSessionProvider from './components/BrowserSessionProvider/BrowserSessionProvider';
 import { SessionOptions } from './sessions/base/SessionOptions';
@@ -11,8 +11,6 @@ import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import { SearchBar } from './components/SearchBar/SearchBar';
 import VolumeControl from './components/VolumeControl/VolumeControl';
 import MainMenu, { Item } from './components/MainMenu/MainMenu';
-import LogProvider from './components/LogProvider/LogProvider';
-import { Logger } from './utilities/logging/Logger';
 import LogOutputWindow from './components/LogOutputWindow/LogOutputWindow';
 
 interface AppProps {

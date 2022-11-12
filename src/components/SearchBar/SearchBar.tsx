@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import TextInput from 'ink-text-input';
-import { Text, Box, useFocus, useInput, useFocusManager } from 'ink';
+import { Box } from 'ink';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import { SearchResults } from './SearchResults';
-import Gradient from 'ink-gradient';
-import Spinner from 'ink-spinner';
 
 export const SearchBar = () => {
   const session = useContext(BrowserSessionContext);

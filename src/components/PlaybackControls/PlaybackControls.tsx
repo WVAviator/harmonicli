@@ -1,7 +1,6 @@
-import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
+import { Box, Text, useFocus, useInput } from 'ink';
 import React, { useContext, useMemo, useState } from 'react';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
-import { State } from '../MainMenu/MainMenu';
 
 /**
  * Displays available playback controls in the current browser context. The controls are displayed in adjacent boxes and can be selected with left and right arrows when the component is focused.

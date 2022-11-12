@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { Page } from 'puppeteer';
 
 // This is pretty much the same as YTPlayUpdates
