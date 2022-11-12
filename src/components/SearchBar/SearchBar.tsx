@@ -23,20 +23,9 @@ export const SearchBar = () => {
     if (searchResultActive) {
       return (
         <Box>
-          {loadingResults ? (
-            <Text>
-              <Gradient name="summer">
-                <Text>
-                  <Spinner type="bouncingBall" />
-                </Text>
-              </Gradient>
-              {' Loading Results'}
-            </Text>
-          ) : (
-            <SearchResults
-              state={{ searchResultActive, setSearchResultActive }}
-            />
-          )}
+          <SearchResults
+            state={{ searchResultActive, setSearchResultActive, loadingResults, setLoadingResults }}
+          />
         </Box>
       );
     }
