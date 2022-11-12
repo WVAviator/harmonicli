@@ -23,23 +23,8 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
   const session = useContext(BrowserSessionContext);
   const songList = useSongList();
 
-  // const { focus } = useFocusManager();
-
-  // useInput((_, key) => {
-  //   if (!state.searchResultActive) return;
-
-  //   if (key.leftArrow || key.escape) {
-  //     state.setSearchResultActive(false);
-  //     // focus('search-bar');
-  //   }
-  //   if (key.rightArrow) {
-  //     // do nothing for now.
-  //   }
-  // });
-
   const handleSelect = (selection) => {
     state.setSearchResultActive(false);
-    // focus('playback-controls');
     session.select(selection.value);
   };
 

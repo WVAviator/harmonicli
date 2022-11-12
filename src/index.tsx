@@ -20,5 +20,3 @@ program
 const options = program.opts();
 
 render(<App options={{ args: program.args, headless: !!options.headless }} />);
-
-// render(<App session={}/>);

@@ -37,10 +37,11 @@ export const App: React.FC<AppProps> = ({ options = {} }) => {
     };
   }, []);
 
-  const testItems: Item[] = [
+  // TODO: Find better place for MainMenu items to be decided.
+  const menuItems: Item[] = [
     { label: 'Search 🔎', element: <SearchBar />, action: (id) =>  {} },
-    { label: 'Exit 🛑', element: <></>, action: (id) =>  process.exit(1) },
-  ]
+    { label: 'Exit 🛑', action: () => process.exit(1) },
+  ];
 
   return (
     <BrowserSessionProvider value={session}>
@@ -48,7 +49,7 @@ export const App: React.FC<AppProps> = ({ options = {} }) => {
         <>
           <NowPlaying />
           <SongProgress />
-          <MainMenu items={testItems}>
+          <MainMenu items={menuItems}>
             <PlaybackControls />
             <VolumeControl />
           </MainMenu>

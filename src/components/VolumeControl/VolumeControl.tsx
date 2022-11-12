@@ -41,6 +41,7 @@ const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   useInput((_, key) => {
     if (!isFocused) return;
 
+    // This code was only left so the enter button removal can be reverted easily.
     // if (key.return) {
     //   if (isSelected) {
     //     setIsSelected(false);
@@ -86,6 +87,7 @@ const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   return (
     <Box>
       <Text color={isFocused ? 'yellow' : 'white'}>{'> '}</Text>
+      {/* This code was only left so the enter button removal can be reverted easily. */}
       {/* {isSelected ? (
         <Text color="white">{volumeString}</Text>
       ) : (

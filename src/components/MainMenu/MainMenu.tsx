@@ -4,7 +4,7 @@ import { KeyObject } from "crypto";
 
 export type Item = {
     label: string, // The label for the item.
-    element: ReactElement, // The actual element to display when the item is selected.
+    element?: ReactElement, // The actual element to display when the item is selected.
     action?: (id: number) => void, // An optional function to call when the item is selected.
 }
 
@@ -50,11 +50,7 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
             buttonBoxFocused: buttonBoxFocused ?? selected.buttonBoxFocused,
         });
     }
-    // const { isFocused } = useFocus({ id: 'main-menu' });
-    // const { focus, focusNext, focusPrevious } = useFocusManager();
 
-
-    // This can be refactored. TODO: refactor
     useInput((_, key) => {
         // Child box logic
         if (selected.childBoxFocused) {
@@ -239,12 +235,13 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
         }
     });
 
-    // TODO: refactor. This is jank
+    // This might be able to be refactored further.
     const mapRows = (items) => {
-        const mapped = [];
-        for (let i = 0; i < items.length; i+=3) {
+        if (!items) new Error('No items provided to mapRows.');
+        const cols = new Array(Math.ceil(items.length/3)).fill(null);
+        return cols.map((_, i) => {
             const row = [];
-            for (let j = i; j < i+3; j++) {
+            for (let j = i; j < (i || 1) * 3; j++) {
                 if (items[j] === undefined) continue;
                 row.push(
                     <Box key={`box-${j}`}
@@ -254,11 +251,11 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
                          display={ selected.buttonFocused && selected.buttonId !== j ? 'none' : 'flex' }
                          flexDirection='row'
                         >
-                        { selected.buttonFocused && selected.buttonId === j ? items[j].element : <Text>{`${items[j].label}`}</Text> }
+                        { selected.buttonFocused && selected.buttonId === j ? items[j].element ?? <></> : <Text>{`${items[j].label}`}</Text> }
                     </Box>
                 );
             }
-            mapped.push(
+            return (
                 <Box width='100%'
                      key={`row-${i}`} 
                      justifyContent='center'
@@ -266,9 +263,8 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
                     {row}
                 </Box>
             );
-        }
-        return mapped;
-    }
+        });
+    }    
 
     const addStateToChildren = (children) => {
         // Mutiple children
@@ -280,21 +276,17 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
         return React.cloneElement(children, { isFocused: selected.childBoxFocused });
     }
 
-    console.log(selected)
-
     return (
-        <Box width='100%' flexDirection="column">
+        <Box width='100%'
+             flexDirection="column">
             {/* Children components (aka stuff you do not want inside the button rows) */}
             <Box flexDirection='column'>
                 { addStateToChildren(children) }
             </Box>
 
             {/* mapped items */}
-            <Box // borderStyle="round"
-                //  borderColor={isFocused ? 'red' : 'white'}
-                width={64}
-                flexDirection="column"
-                > 
+            <Box width={64}
+                 flexDirection="column"> 
                 { mapRows(items) }
             </Box>
         </Box>
