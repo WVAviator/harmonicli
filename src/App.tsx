@@ -38,24 +38,19 @@ export const App: React.FC<AppProps> = ({ options = {} }) => {
   }, []);
 
   const testItems: Item[] = [
-    { label: 'test1', element: <Text>Test1</Text>, action: (id) =>  console.log(id) },
-    { label: 'test2', element: <Text>Test2</Text>, action: (id) =>  console.log(id) },
-    { label: 'test3', element: <Text>Test3</Text>, action: (id) =>  console.log(id) },
-    { label: 'test4', element: <Text>Test4</Text>, action: (id) =>  console.log(id) },
-    { label: 'test5', element: <Text>Test5</Text>, action: (id) =>  console.log(id) }
+    { label: 'Search 🔎', element: <SearchBar />, action: (id) =>  {} },
+    { label: 'Exit 🛑', element: <></>, action: (id) =>  process.exit(1) },
   ]
 
   return (
     <BrowserSessionProvider value={session}>
       {session ? (
-        <>
+        <MainMenu items={testItems}>
           <NowPlaying />
           <SongProgress />
           <PlaybackControls />
           <VolumeControl />
-          <SearchBar />
-          <MainMenu items={testItems}/>
-        </>
+        </MainMenu>
       ) : (
         <Text>
           <Gradient name="summer">
