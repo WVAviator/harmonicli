@@ -116,10 +116,6 @@ describe('MainMenu', () => {
             { label: 'Unfocused2', element: <Text>Focused2</Text>, action: () => null },
         ];
 
-        const Test: FC<{ isFocused?: boolean }> = ({ isFocused }) => (
-            <Text>{ isFocused ? 'Focused' : 'Unfocused' }</Text>
-        );
-
         const testState: State = {
             buttonId: 0,
             childId: 0,
