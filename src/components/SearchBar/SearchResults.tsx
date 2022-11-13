@@ -1,4 +1,4 @@
-import React, { useContext, FC, useState } from 'react';
+import React, { useContext, FC, useState, useEffect } from 'react';
 import useSongList from '../../hooks/useSongList';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import SelectInput from 'ink-select-input/build';
@@ -29,7 +29,13 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
     session.select(selection.value);
   };
 
-  if (songList) state.setLoadingResults(false);
+  useEffect(() => {
+    if (songList) state.setLoadingResults(false);
+    return () => {
+      state.setLoadingResults(true);
+    }
+  });
+
 
   const parsedSongSelections = songList?.map((song) => {
     return {
