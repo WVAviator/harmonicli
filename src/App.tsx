@@ -55,7 +55,7 @@ export const App: React.FC<AppProps> = ({
         <>
           <NowPlaying />
           <SongProgress />
-          <MainMenu items={menuItems} defaultChildFocused={1}>
+          <MainMenu items={menuItems}>
             <PlaybackControls />
             <VolumeControl />
           </MainMenu>

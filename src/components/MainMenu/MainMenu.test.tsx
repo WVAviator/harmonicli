@@ -1,4 +1,4 @@
-import MainMenu, { MenuButtonItem, State } from './MainMenu';
+import MainMenu, { MenuButtonItem } from './MainMenu';
 import React, { FC } from 'react';
 import { Text } from 'ink';
 import { render } from 'ink-testing-library';
@@ -32,7 +32,7 @@ describe('MainMenu', () => {
             { label: 'Unfocused', element: <Text>Focused</Text>, action: () => null },
         ];
 
-        const testState: State = {
+        const testState = {
             buttonId: 0,
             childId: 0,
             buttonFocused: false,
@@ -79,7 +79,7 @@ describe('MainMenu', () => {
             <Text>{ isFocused ? 'Focused' : 'Unfocused' }</Text>
         );
 
-        const testState: State = {
+        const testState = {
             buttonId: 0,
             childId: 0,
             buttonFocused: false,
@@ -116,7 +116,7 @@ describe('MainMenu', () => {
             { label: 'Unfocused2', element: <Text>Focused2</Text>, action: () => null },
         ];
 
-        const testState: State = {
+        const testState = {
             buttonId: 0,
             childId: 0,
             buttonFocused: false,

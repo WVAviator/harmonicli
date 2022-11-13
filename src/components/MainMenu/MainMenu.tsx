@@ -7,11 +7,13 @@ export type MenuButtonItem = {
     action?: (id: number) => void, // An optional function to call when the item is selected.
 }
 
-interface SelectedState {
-    selectedStateHelper: (state: State) => State,
+interface MainMenuProps {
+    items: MenuButtonItem[];
+    children?: any;
+    testState?: State;
 }
 
-export type State = {
+type State = {
     buttonId: number,
     childId: number,
     buttonFocused: boolean,
@@ -19,29 +21,21 @@ export type State = {
     buttonBoxFocused: boolean,
 }
 
-// This is only here so we can have undefined values in selectedStateHelper. Couldn't figure out another way.
-// Most likely can be refactored.
-type StateUnknown = {
-    buttonId?: number,
-    childId?: number,
-    buttonFocused?: boolean,
-    childBoxFocused?: boolean,
-    buttonBoxFocused?: boolean,
+type StateUnknown<T> = {
+    [Prop in keyof T]?: T[Prop];
 }
 
-const MainMenu: FC<{ items: MenuButtonItem[], children?: any, defaultChildFocused?: number, testState?:State }> = ({ items, children, defaultChildFocused, testState }) => {
+const MainMenu: FC<MainMenuProps> = ({ items, children, testState }) => {
 
-    const defaultState: State = {
+    const [ selected, setSelected ] = useState<State>(testState ?? {
         buttonId: 0,
-        childId: Array.isArray(children) ? defaultChildFocused ?? 0 : 0,
+        childId: 0,
         buttonFocused: false,
         childBoxFocused: true,
         buttonBoxFocused: false,
-    };
+    });
 
-    const [ selected, setSelected ] = useState<State>(testState ?? defaultState);
-
-    const selectedStateHelper = ({ buttonId, childId, buttonFocused, childBoxFocused, buttonBoxFocused }: State | StateUnknown ): State => {
+    const selectedStateHelper = ({ buttonId, childId, buttonFocused, childBoxFocused, buttonBoxFocused }: StateUnknown<State> ): State => {
         return ({
             buttonId: buttonId ?? selected.buttonId,
             childId: childId ?? selected.childId,
