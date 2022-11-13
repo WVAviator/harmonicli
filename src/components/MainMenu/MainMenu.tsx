@@ -1,7 +1,7 @@
 import React, { FC, ReactElement, useState } from "react";
 import { Box, Text, useInput } from 'ink';
 
-export type Item = {
+export type MenuButtonItem = {
     label: string, // The label for the item.
     element?: ReactElement, // The actual element to display when the item is selected.
     action?: (id: number) => void, // An optional function to call when the item is selected.
@@ -29,7 +29,7 @@ type StateUnknown = {
     buttonBoxFocused?: boolean,
 }
 
-const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number }> = ({ items, children, defaultChildFocused }) => {
+const MainMenu: FC<{ items: MenuButtonItem[], children?: any, defaultChildFocused?: number, testState?:State }> = ({ items, children, defaultChildFocused, testState }) => {
 
     const defaultState: State = {
         buttonId: 0,
@@ -39,7 +39,7 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
         buttonBoxFocused: false,
     };
 
-    const [ selected, setSelected ] = useState<State>(defaultState);
+    const [ selected, setSelected ] = useState<State>(testState ?? defaultState);
 
     const selectedStateHelper = ({ buttonId, childId, buttonFocused, childBoxFocused, buttonBoxFocused }: State | StateUnknown ): State => {
         return ({
@@ -218,7 +218,7 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
 
     // This might be able to be refactored further.
     // Inner for loop is there due to the continue keyword.
-    const mapRows = (items: Item[]) => {
+    const mapRows = (items: MenuButtonItem[]) => {
         if (!items) new Error('No items provided to mapRows.');
         const cols = new Array(Math.ceil(items.length/3)).fill(null);
         return cols.map((_, i) => {
@@ -226,6 +226,7 @@ const MainMenu: FC<{ items: Item[], children?: any, defaultChildFocused?: number
             for (let j = i; j < (i || 1) * 3; j++) {
                 if (items[j] === undefined) continue;
                 row.push(
+                    // TODO: Maybe break this to it's own Button component?
                     <Box key={`box-${j}`}
                          borderStyle='round'
                          borderColor={selected.buttonId === j && selected.buttonBoxFocused ? 'yellow' : 'white'}
