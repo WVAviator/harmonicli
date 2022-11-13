@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { YTMusicSession } from './sessions/yt-music/YTMusicSession';
 import BrowserSessionProvider from './components/BrowserSessionProvider/BrowserSessionProvider';
 import { SessionOptions } from './sessions/base/SessionOptions';
@@ -10,9 +10,7 @@ import NowPlaying from './components/NowPlaying/NowPlaying';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import { SearchBar } from './components/SearchBar/SearchBar';
 import VolumeControl from './components/VolumeControl/VolumeControl';
-import MainMenu, { Item } from './components/MainMenu/MainMenu';
-import LogProvider from './components/LogProvider/LogProvider';
-import { Logger } from './utilities/logging/Logger';
+import MainMenu, { MenuButtonItem } from './components/MainMenu/MainMenu';
 import LogOutputWindow from './components/LogOutputWindow/LogOutputWindow';
 
 interface AppProps {
@@ -45,7 +43,7 @@ export const App: React.FC<AppProps> = ({
   }, []);
 
   // TODO: Find better place for MainMenu items to be decided.
-  const menuItems: Item[] = [
+  const menuItems: MenuButtonItem[] = [
     { label: 'Search 🔎', element: <SearchBar />, action: (id) =>  {} },
     { label: 'Exit 🛑', action: () => process.exit(1) },
   ];
@@ -57,7 +55,7 @@ export const App: React.FC<AppProps> = ({
         <>
           <NowPlaying />
           <SongProgress />
-          <MainMenu items={menuItems}>
+          <MainMenu items={menuItems} defaultChildFocused={1}>
             <PlaybackControls />
             <VolumeControl />
           </MainMenu>
