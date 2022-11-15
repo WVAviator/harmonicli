@@ -228,15 +228,13 @@ const MainMenu: FC<MainMenuProps> = ({ items, children, testState }) => {
                          display={ selected.buttonFocused && selected.buttonId !== j ? 'none' : 'flex' }
                          flexDirection='row'
                         >
-                        { selected.buttonFocused && selected.buttonId === j ? items[j].element ?? <></> : <Text>{`${items[j].label}`}</Text> }
+                        { selected.buttonFocused && selected.buttonId === j ? items[j].element ?? <></> : <Text>{items[j].label}</Text> }
                     </Box>
                 );
             }
             return (
                 <Box width='100%'
-                     key={`row-${i}`} 
-                     justifyContent='center'
-                     >
+                     key={`row-${i}`}>
                     {row}
                 </Box>
             );
