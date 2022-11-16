@@ -9,13 +9,18 @@ const VOLUME_STRING = '▁▂▂▃▃▄▄▅▅▆';
 /**
  * A focusable component that allows changing the volume of the music. Focus can be set to this component with id 'volume-control'.
  */
-const VolumeControl: React.FC = () => {
+const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   const session = useContext(BrowserSessionContext);
   const [volume, setVolume] = useState(MAX_VOLUME);
   const [isSelected, setIsSelected] = useState(false);
 
-  const { isFocused } = useFocus({ id: 'volume-control' });
-  const { focusNext, focusPrevious } = useFocusManager();
+  // const { isFocused } = useFocus({ id: 'volume-control' });
+  let { focusNext, focusPrevious } = {focusNext: (...args) => null, focusPrevious: (...args) => null};
+  if (isFocused === undefined || isFocused === null) {
+    isFocused = useFocus({ id: 'volume-control' }).isFocused;
+    focusNext = useFocusManager().focusNext;
+    focusPrevious = useFocusManager().focusPrevious;
+  }
 
   const increaseVolume = () => {
     if (volume === MAX_VOLUME) return;
@@ -36,20 +41,29 @@ const VolumeControl: React.FC = () => {
   useInput((_, key) => {
     if (!isFocused) return;
 
-    if (key.return) {
-      if (isSelected) {
-        setIsSelected(false);
-        session.volume = volume / MAX_VOLUME;
-      } else {
-        setIsSelected(true);
-      }
-    }
+    // This code was only left so the enter button removal can be reverted easily.
+    // if (key.return) {
+    //   if (isSelected) {
+    //     setIsSelected(false);
+    //     session.volume = volume / MAX_VOLUME;
+    //   } else {
+    //     setIsSelected(true);
+    //   }
+    // }
 
-    if (key.rightArrow && isSelected) {
+    // if (key.rightArrow && isSelected) {
+    //   increaseVolume();
+    // }
+
+    // if (key.leftArrow && isSelected) {
+    //   decreaseVolume();
+    // }
+
+    if (key.rightArrow) {
       increaseVolume();
     }
 
-    if (key.leftArrow && isSelected) {
+    if (key.leftArrow) {
       decreaseVolume();
     }
 
@@ -73,13 +87,17 @@ const VolumeControl: React.FC = () => {
   return (
     <Box>
       <Text color={isFocused ? 'yellow' : 'white'}>{'> '}</Text>
-      {isSelected ? (
+      {/* This code was only left so the enter button removal can be reverted easily. */}
+      {/* {isSelected ? (
         <Text color="white">{volumeString}</Text>
       ) : (
         <Gradient name="summer">
           <Text>{volumeString}</Text>
         </Gradient>
-      )}
+      )} */}
+        <Gradient name="summer">
+          <Text>{volumeString}</Text>
+        </Gradient>
     </Box>
   );
 };

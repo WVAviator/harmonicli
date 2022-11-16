@@ -1,4 +1,4 @@
-import { Box, Text, useFocus, useFocusManager, useInput } from 'ink';
+import { Box, Text, useFocus, useInput } from 'ink';
 import React, { useContext, useMemo, useState } from 'react';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 
@@ -7,7 +7,7 @@ import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionP
  *
  * The component can be focused with focus ID 'playback-controls'.
  */
-const PlaybackControls: React.FC = () => {
+const PlaybackControls: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   const session = useContext(BrowserSessionContext);
   const controls = useMemo(() => {
     return [
@@ -19,8 +19,9 @@ const PlaybackControls: React.FC = () => {
 
   const [selectedControlIndex, setSelectedControlIndex] = useState(1);
 
-  const { isFocused } = useFocus({ autoFocus: true, id: 'playback-controls' });
-  const { focusNext } = useFocusManager();
+  if (isFocused === undefined || isFocused === null) {
+    isFocused = useFocus({ autoFocus: true, id: 'playback-controls' }).isFocused;
+  }
 
   useInput((_, key) => {
     if (!isFocused) return;
@@ -35,7 +36,6 @@ const PlaybackControls: React.FC = () => {
     }
     if (key.downArrow) {
       setSelectedControlIndex(1);
-      focusNext();
     }
     if (key.return) {
       controls[selectedControlIndex].value();

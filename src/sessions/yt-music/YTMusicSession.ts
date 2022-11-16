@@ -1,5 +1,5 @@
 import { BrowserSession } from '../base/BrowserSession';
-import { Page } from 'puppeteer';
+import { Page, executablePath } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import Adblocker from 'puppeteer-extra-plugin-adblocker';
 import {
@@ -61,6 +61,7 @@ export class YTMusicSession extends BrowserSession {
         headless: sessionOptions.headless,
         ignoreDefaultArgs: ['--mute-audio'],
         args: ['--autoplay-policy=no-user-gesture-required'],
+        executablePath: executablePath(),
       });
       page = await browser.newPage();
       await page.setUserAgent(

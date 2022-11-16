@@ -42,6 +42,12 @@ export class YTSearchHandler {
    * @param query A string or string array (that will be joined by a space) to use as the search query.
    */
   public async search(query: string | string[]) {
+
+    // Reset searchResults on new search
+    if (this.searchResults) {
+      this.searchResults = null;
+    }
+
     if (query) {
       try {
         if (Array.isArray(query)) query = query.join(' ');

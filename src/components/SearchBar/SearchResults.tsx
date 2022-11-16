@@ -1,15 +1,16 @@
-import React, { useContext, FC, useState } from 'react';
+import React, { useContext, FC, useState, useEffect } from 'react';
 import useSongList from '../../hooks/useSongList';
 import { BrowserSessionContext } from '../BrowserSessionProvider/BrowserSessionProvider';
 import SelectInput from 'ink-select-input/build';
-import { Text, useFocusManager, useInput } from 'ink';
+import { Text } from 'ink';
 import Gradient from 'ink-gradient';
 import Spinner from 'ink-spinner';
-import { getFormattedTimeString } from '../../utilities/formatTime';
 
 type SRState = {
   searchResultActive: boolean;
   setSearchResultActive: React.Dispatch<React.SetStateAction<boolean>>;
+  loadingResults: boolean;
+  setLoadingResults: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 interface SearchResultsProps {
@@ -23,27 +24,18 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
   const session = useContext(BrowserSessionContext);
   const songList = useSongList();
 
-  const { focus } = useFocusManager();
+  const handleSelect = (selection) => {
+    state.setSearchResultActive(false);
+    session.select(selection.value);
+  };
 
-  useInput((_, key) => {
-    if (key.leftArrow || key.escape) {
-      state.setSearchResultActive(false);
-      focus('search-bar');
-    }
-    if (key.rightArrow) {
-      // do nothing for now.
-    }
-    if (key.upArrow && !songList?.length) {
-      state.setSearchResultActive(false);
-      focus('search-bar');
+  useEffect(() => {
+    if (songList) state.setLoadingResults(false);
+    return () => {
+      state.setLoadingResults(true);
     }
   });
 
-  const handleSelect = (selection) => {
-    state.setSearchResultActive(false);
-    focus('playback-controls');
-    session.select(selection.value);
-  };
 
   const parsedSongSelections = songList?.map((song) => {
     return {
@@ -52,13 +44,32 @@ export const SearchResults: FC<SearchResultsProps> = ({ state }) => {
     };
   });
 
-  return (
-    <>
-      {songList?.length ? (
-        <SelectInput items={parsedSongSelections} onSelect={handleSelect} />
-      ) : (
-        <Text>No results found.</Text>
-      )}
-    </>
-  );
+  const view = () => {
+
+    if (state.loadingResults) {
+      return (
+        <Text>
+          <Gradient name="summer">
+            <Text>
+              <Spinner type="bouncingBall" />
+            </Text>
+          </Gradient>
+          {' Loading Results'}
+        </Text>
+      );
+    }
+
+    return (
+      <>
+        {songList?.length ? (
+          <SelectInput items={parsedSongSelections} onSelect={handleSelect} />
+        ) : (
+          <Text>No results found.</Text>
+        )}
+      </>
+    );
+
+  }
+
+  return view();
 };
