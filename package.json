@@ -1,10 +1,10 @@
 {
-  "name": "music-browser-cli",
+  "name": "harmonicli",
   "version": "0.0.1",
   "description": "A CLI for browsing and streaming music.",
   "main": "bin/index.js",
   "bin": {
-    "play": "bin/index.js"
+    "harmonicli": "bin/index.js"
   },
   "scripts": {
     "link": "sudo npm link",

@@ -3718,9 +3718,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"music-browser-cli@workspace:.":
+"harmonicli@workspace:.":
   version: 0.0.0-use.local
-  resolution: "music-browser-cli@workspace:."
+  resolution: "harmonicli@workspace:."
   dependencies:
     "@types/commander": ^2.12.2
     "@types/inquirer": ^9.0.3

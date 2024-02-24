@@ -9,7 +9,7 @@ import LogProvider from './components/LogProvider/LogProvider';
 const program = new Command();
 
 program
-  .name('music-browser-cli')
+  .name('harmonicli')
   .description('Utility for headlessly browsing and listening to music.')
   .version('0.0.1')
   .option(
