@@ -19,11 +19,11 @@ To play the first search result by default, simply append your search query to t
 `harmonicli old town road`
 
 To change songs, use your arrow keys or (h, j, k, l) vim direction keys to choose one of the provided playback
-controls ⏮, ⏯, and ⏭. Music Browser CLI uses Youtube Music under the hood, and
+controls ⏮, ⏯, and ⏭. HarmoniCLI uses Youtube Music under the hood, and
 the playlist is determined randomly based on your song search.
 
-To adjust volume, move down to the volume control and press enter. Then use
-left/right keys to adjust and press enter again.
+To adjust volume, move down to the volume control and press enter. Then move
+left/right to adjust and press enter again.
 
 To search for a different song, enter your query in the search box and move
 down to select a new song and press enter.
