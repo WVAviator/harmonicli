@@ -20,21 +20,24 @@ const PlaybackControls: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   const [selectedControlIndex, setSelectedControlIndex] = useState(1);
 
   if (isFocused === undefined || isFocused === null) {
-    isFocused = useFocus({ autoFocus: true, id: 'playback-controls' }).isFocused;
+    isFocused = useFocus({
+      autoFocus: true,
+      id: 'playback-controls',
+    }).isFocused;
   }
 
-  useInput((_, key) => {
+  useInput((char, key) => {
     if (!isFocused) return;
 
-    if (key.rightArrow) {
+    if (key.rightArrow || char === 'l') {
       setSelectedControlIndex((selectedControlIndex + 1) % controls.length);
     }
-    if (key.leftArrow) {
+    if (key.leftArrow || char === 'h') {
       setSelectedControlIndex(
         (selectedControlIndex + controls.length - 1) % controls.length
       );
     }
-    if (key.downArrow) {
+    if (key.downArrow || char === 'j') {
       setSelectedControlIndex(1);
     }
     if (key.return) {

@@ -22,7 +22,12 @@ export const SearchBar = () => {
       return (
         <Box>
           <SearchResults
-            state={{ searchResultActive, setSearchResultActive, loadingResults, setLoadingResults }}
+            state={{
+              searchResultActive,
+              setSearchResultActive,
+              loadingResults,
+              setLoadingResults,
+            }}
           />
         </Box>
       );
@@ -30,14 +35,13 @@ export const SearchBar = () => {
 
     return (
       <TextInput
-        placeholder="Search 🔎"
+        // placeholder=" 🔎"
         value={inputValue}
         onChange={setInputValue}
         onSubmit={handleSearchSubmit}
       />
     );
   };
-
 
   return view();
 };
