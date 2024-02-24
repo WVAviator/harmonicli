@@ -1,4 +1,4 @@
-# Music Browser CLI (final name TBD)
+# HarmoniCLI
 
 This application lets you play music right in your terminal! You'll be
 _flabberghasted_ by how fun and intuitive the interface is.
@@ -8,11 +8,11 @@ Get started by cloning this repo, and then run the following commands:
 - `yarn`
 - `yarn install:local`
 
-This installs the `play` command globally and will require a password.
+This installs the `play` command globally and may require a password.
 Alternatively, if you do not want to install the CLI globally or cannot sudo,
-you can use `yarn dev` in place of `play`.
+you can use `yarn dev` in place of `harmonicli`.
 
-To play a song, simply append your search query to the `play` command like so:
+To play a song, simply append your search query to the `harmonicli` command like so:
 
 `play old town road`
 
