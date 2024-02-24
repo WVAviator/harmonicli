@@ -15,7 +15,10 @@ const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   const [isSelected, setIsSelected] = useState(false);
 
   // const { isFocused } = useFocus({ id: 'volume-control' });
-  let { focusNext, focusPrevious } = {focusNext: (...args) => null, focusPrevious: (...args) => null};
+  let { focusNext, focusPrevious } = {
+    focusNext: (...args) => null,
+    focusPrevious: (...args) => null,
+  };
   if (isFocused === undefined || isFocused === null) {
     isFocused = useFocus({ id: 'volume-control' }).isFocused;
     focusNext = useFocusManager().focusNext;
@@ -38,42 +41,24 @@ const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
     setVolume(session.volume * MAX_VOLUME);
   }, []);
 
-  useInput((_, key) => {
+  useInput((char, key) => {
     if (!isFocused) return;
 
-    // This code was only left so the enter button removal can be reverted easily.
-    // if (key.return) {
-    //   if (isSelected) {
-    //     setIsSelected(false);
-    //     session.volume = volume / MAX_VOLUME;
-    //   } else {
-    //     setIsSelected(true);
-    //   }
-    // }
-
-    // if (key.rightArrow && isSelected) {
-    //   increaseVolume();
-    // }
-
-    // if (key.leftArrow && isSelected) {
-    //   decreaseVolume();
-    // }
-
-    if (key.rightArrow) {
+    if (key.rightArrow || char === 'l') {
       increaseVolume();
     }
 
-    if (key.leftArrow) {
+    if (key.leftArrow || char === 'h') {
       decreaseVolume();
     }
 
-    if (key.upArrow) {
+    if (key.upArrow || char === 'k') {
       setIsSelected(false);
       session.volume = volume / MAX_VOLUME;
       focusPrevious();
     }
 
-    if (key.downArrow) {
+    if (key.downArrow || char === 'j') {
       setIsSelected(false);
       session.volume = volume / MAX_VOLUME;
       focusNext();
@@ -87,17 +72,9 @@ const VolumeControl: React.FC<{ isFocused?: boolean }> = ({ isFocused }) => {
   return (
     <Box>
       <Text color={isFocused ? 'yellow' : 'white'}>{'> '}</Text>
-      {/* This code was only left so the enter button removal can be reverted easily. */}
-      {/* {isSelected ? (
-        <Text color="white">{volumeString}</Text>
-      ) : (
-        <Gradient name="summer">
-          <Text>{volumeString}</Text>
-        </Gradient>
-      )} */}
-        <Gradient name="summer">
-          <Text>{volumeString}</Text>
-        </Gradient>
+      <Gradient name="summer">
+        <Text>{volumeString}</Text>
+      </Gradient>
     </Box>
   );
 };

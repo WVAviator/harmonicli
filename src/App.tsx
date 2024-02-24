@@ -44,8 +44,8 @@ export const App: React.FC<AppProps> = ({
 
   // TODO: Find better place for MainMenu items to be decided.
   const menuItems: MenuButtonItem[] = [
-    { label: 'Search', element: <SearchBar />, action: (id) =>  {} },
-    { label: 'Exit', action: () => process.exit(1) },
+    { label: 'Search', element: <SearchBar />, action: (id) => {} },
+    { label: 'Exit', action: () => process.exit(0) },
   ];
 
   return (
